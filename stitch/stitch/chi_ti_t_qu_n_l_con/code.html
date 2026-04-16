@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Family Guardian - Chi tiết Trẻ em</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#3c0089",
+                        "on-primary-container": "#2e006c",
+                        "inverse-primary": "#742fe5",
+                        "secondary-fixed": "#bfd1ff",
+                        "tertiary-container": "#ff8ed2",
+                        "error-container": "#a70138",
+                        "surface-container-low": "#131315",
+                        "secondary-container": "#005ac2",
+                        "surface-container-lowest": "#000000",
+                        "inverse-on-surface": "#565457",
+                        "tertiary-fixed": "#ff8ed2",
+                        "tertiary-fixed-dim": "#ef81c4",
+                        "on-tertiary-fixed-variant": "#6e1354",
+                        "on-primary-fixed": "#000000",
+                        "inverse-surface": "#fcf8fb",
+                        "on-secondary": "#001e4a",
+                        "surface-container": "#19191c",
+                        "on-tertiary-container": "#63054a",
+                        "primary-container": "#b28cff",
+                        "secondary": "#699cff",
+                        "background": "#0e0e10",
+                        "surface-variant": "#262528",
+                        "on-tertiary-fixed": "#3b002b",
+                        "on-surface-variant": "#adaaad",
+                        "on-background": "#f9f5f8",
+                        "primary-fixed": "#b28cff",
+                        "on-secondary-fixed": "#003271",
+                        "on-error": "#490013",
+                        "error-dim": "#d73357",
+                        "on-tertiary": "#701455",
+                        "on-primary-fixed-variant": "#390083",
+                        "surface-bright": "#2c2c2f",
+                        "on-error-container": "#ffb2b9",
+                        "outline-variant": "#48474a",
+                        "surface-tint": "#bd9dff",
+                        "surface-container-high": "#1f1f22",
+                        "tertiary": "#ffa5d9",
+                        "secondary-fixed-dim": "#a9c4ff",
+                        "primary": "#bd9dff",
+                        "outline": "#767577",
+                        "on-secondary-container": "#f7f7ff",
+                        "primary-dim": "#8a4cfc",
+                        "on-surface": "#f9f5f8",
+                        "surface-container-highest": "#262528",
+                        "error": "#ff6e84",
+                        "secondary-dim": "#699cff",
+                        "surface": "#0e0e10",
+                        "on-secondary-fixed-variant": "#004da8",
+                        "tertiary-dim": "#ef81c4",
+                        "surface-dim": "#0e0e10",
+                        "primary-fixed-dim": "#a67aff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<nav class="bg-[#19191c]/70 backdrop-blur-xl fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full shadow-[0_40px_40px_-15px_rgba(138,76,252,0.06)]">
+<div class="text-xl font-bold tracking-tight text-white">Family Guardian</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-gray-400 hover:text-white transition-colors" href="#">Bảng điều khiển</a>
+<a class="text-[#bd9dff] font-semibold border-b-2 border-[#8a4cfc] pb-1" href="#">Trẻ em</a>
+<a class="text-gray-400 hover:text-white transition-colors" href="#">Thông báo</a>
+<a class="text-gray-400 hover:text-white transition-colors" href="#">Cài đặt</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="material-symbols-outlined text-gray-400 hover:bg-white/5 p-2 rounded-full transition-all">notifications</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-high ring-2 ring-primary/20">
+<img alt="User avatar menu" data-alt="close-up portrait of a professional smiling man with glasses, soft studio lighting, minimalist dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs5P7ih55f8oOrt_Ok3EY2PuvXvWxzRJ0rUtduI5uGnTL8muXrIusksXgkJRcE7rh8IPtxx9aX-bYfhVZt2bNSay3EN6PNpWqNddEm9BZg9hd6MsBnlPqL-X2vSYYLZJGpzHMKdx-Y3pRqv9uVPYv9FP1IBTjnzrDcvHyVOjcM8a_vakNpfWYsVttsmH2KCreGhyc_yvxIEUGtp_95FptNocAWhaLRkwwY7bRG8DkAOsr8lHGnfyTStyR0sUHLVP-WnYUnn01r6ro"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) - Hidden on Mobile -->
+<aside class="fixed left-0 top-0 h-full p-4 w-64 hidden md:flex flex-col bg-[#131315] bg-gradient-to-r from-[#131315] to-[#0e0e10] z-40">
+<div class="pt-20 pb-8 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-xl bg-primary-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white leading-none">Family Guardian</h1>
+<p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Người Giám Hộ</p>
+</div>
+</div>
+<nav class="space-y-1 flex-1">
+<a class="flex items-center space-x-3 px-4 py-3 text-gray-400 hover:bg-[#19191c] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Bảng điều khiển</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 bg-[#19191c] text-[#bd9dff] rounded-lg shadow-[inset_0_0_10px_rgba(138,76,252,0.1)]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+<span>Trẻ em</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-gray-400 hover:bg-[#19191c] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span>Thông báo</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-gray-400 hover:bg-[#19191c] hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Cài đặt</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-white/5 pt-4">
+<a class="flex items-center space-x-3 px-4 py-3 text-gray-400 hover:bg-[#19191c] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Hỗ trợ</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-error-dim hover:bg-error-container/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:pl-64 pt-16 min-h-screen">
+<div class="p-6 max-w-7xl mx-auto space-y-8">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="w-24 h-24 rounded-3xl overflow-hidden bg-surface-container shadow-2xl">
+<img alt="Nguyễn An" data-alt="vibrant 3D avatar of a young Vietnamese boy with friendly expression, soft lighting, clean digital illustration style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS22UaWg79RKiXJj3aLBRaKYkO6VwZdxIxrMb7OGWjSqVGBygZ1qSY_n3wpfDyJ6CqXeMmohrMktzpL3oRLOycd2_ChoV4TikMKtN-PyNi0EB_q6D-EbnkaXiZGbP-TheIdzz-9YnDRWqTpbPPtkzHyTWVunQA4rj5dgGgrtuO4G3fqc-oSU_Za9NjIbmVFbdYE35y_VtImTCCQkvSu-j8cPTWX0FMMSH3cwQDM4VxFwx1gTD2pHvQyoUzr1dEMKDmOS3CD6E5Qyg"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-background"></div>
+</div>
+<div class="space-y-1">
+<p class="text-primary-dim font-semibold tracking-wider text-sm uppercase">Hồ sơ trẻ em</p>
+<h1 class="text-4xl font-bold text-white tracking-tight">Nguyễn An</h1>
+<div class="flex items-center gap-4 text-on-surface-variant text-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">cake</span> 12 tuổi</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">devices</span> iPad Air • iPhone 13</span>
+</div>
+</div>
+</div>
+<button class="bg-gradient-to-r from-primary-dim to-secondary text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">send</span>
+                    Gửi thông báo
+                </button>
+</header>
+<!-- Navigation Tabs -->
+<div class="flex overflow-x-auto no-scrollbar gap-2 p-1 bg-surface-container-low rounded-2xl w-fit">
+<button class="px-6 py-3 rounded-xl text-sm font-semibold whitespace-nowrap bg-surface-container text-[#bd9dff] shadow-sm">Quy tắc Website</button>
+<button class="px-6 py-3 rounded-xl text-sm font-semibold whitespace-nowrap text-on-surface-variant hover:text-on-surface transition-colors">Lịch sử truy cập</button>
+<button class="px-6 py-3 rounded-xl text-sm font-semibold whitespace-nowrap text-on-surface-variant hover:text-on-surface transition-colors">Thống kê sử dụng</button>
+<button class="px-6 py-3 rounded-xl text-sm font-semibold whitespace-nowrap text-on-surface-variant hover:text-on-surface transition-colors">Thông báo đã gửi</button>
+</div>
+<!-- Content Grid: Asymmetric Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Rule Table Section (2/3 width) -->
+<section class="lg:col-span-2 space-y-6">
+<div class="bg-surface-container rounded-3xl p-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-5">
+<span class="material-symbols-outlined text-8xl">security</span>
+</div>
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-xl font-bold text-white">Quản lý Quy tắc Website</h2>
+<p class="text-on-surface-variant text-sm mt-1">Thiết lập các giới hạn truy cập cho Nguyễn An</p>
+</div>
+<button class="text-primary-dim text-sm font-bold flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined">add</span> Thêm quy tắc
+                            </button>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant text-xs uppercase tracking-widest">
+<th class="pb-4 font-semibold px-2">Tên miền</th>
+<th class="pb-4 font-semibold px-2">Loại quy tắc</th>
+<th class="pb-4 font-semibold px-2">Giới hạn</th>
+<th class="pb-4 font-semibold text-right px-2">Trạng thái</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="py-5 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#ff0000]/10 flex items-center justify-center">
+<img alt="youtube" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVPx_67atDtIEEXyCa5qon-uS3NIL2sP0xVljs7agzniyrB1cL08DwRJoerIybttFV0VsoHK3csr3y9skNAjlyLGXSIOg3XceVdGqRal9sE3YkU87JCYuF1RzrN2HNFqUvDwOzRFvJPEqVc_I6sry5VkleMgV1wiaJS_B1amYKF2r69VL88lRm6lUMrzY9wLw050Mo25oe9FIMy6Ntaqq2y031ubW6Nv0L4Vm7n3N2dKxp2jICH1jTxnEN5_t-MoIZxJOmJMaBDUU"/>
+</div>
+<div>
+<p class="text-white font-medium">youtube.com</p>
+<p class="text-xs text-on-surface-variant">Giải trí Video</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-2">
+<span class="bg-secondary/10 text-secondary text-xs font-bold px-3 py-1 rounded-full border border-secondary/20">Cho phép</span>
+</td>
+<td class="py-5 px-2 text-sm text-on-surface-variant">2 giờ / ngày</td>
+<td class="py-5 px-2">
+<div class="flex justify-end">
+<div class="w-12 h-6 bg-primary rounded-full relative cursor-pointer p-1">
+<div class="bg-white w-4 h-4 rounded-full translate-x-6"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="py-5 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+<img alt="tiktok" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4m8B9sesDzx1gS5DgxC5ghW8aNlRa3zAN7UuAyQ94VRbSgOJjwf8_qpaIlljY5QvsX-490vvWQcA8aWmnDE5c6gZqwfV3qfOrxjH1xmjaCO2s8s-wDtaB4Tmgd1OYspeBgbKL6NuOwIo2jxOgEAFAR_jGbKE2XrCObz17TTM7YnG7y8wd1E0qKjcPEWBOFP15yq8XS-bWgS9BGeGVcNZPbMPmtu7p_kBLYNs2ErMlnWDALMZIVfJs70KoZ8u_OGcKItRuXH3W48o"/>
+</div>
+<div>
+<p class="text-white font-medium">tiktok.com</p>
+<p class="text-xs text-on-surface-variant">Mạng xã hội</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-2">
+<span class="bg-error/10 text-error text-xs font-bold px-3 py-1 rounded-full border border-error/20">Chặn</span>
+</td>
+<td class="py-5 px-2 text-sm text-on-surface-variant">Luôn luôn</td>
+<td class="py-5 px-2">
+<div class="flex justify-end">
+<div class="w-12 h-6 bg-surface-container-highest rounded-full relative cursor-pointer p-1">
+<div class="bg-on-surface-variant w-4 h-4 rounded-full"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="py-5 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#1877f2]/10 flex items-center justify-center">
+<img alt="facebook" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnqrIPh40VuVNSQtPkE6UfzYyMGyIlwhAK44P8uK0E934ledzmiYpGgElk7nFrxWmoYIicJh3kE103VYA2tmTpBL-ZnATL0Iti0P1IU_n2vT7s8PkC2q5Hf9NszaqEn0H4LZZhUIZrsPv6eem_Bt1yrHjW_XyP3m0qboZUt0Py6YE-5nvrTn305OFL5HrUHaouDBjGEW2oww1KDaTlKarch0C4MrcS6CU_naN_kKNNmz9lVSQWIa13r0XsDWvJmvFGJa3uLcbh8vs"/>
+</div>
+<div>
+<p class="text-white font-medium">facebook.com</p>
+<p class="text-xs text-on-surface-variant">Mạng xã hội</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-2">
+<span class="bg-secondary/10 text-secondary text-xs font-bold px-3 py-1 rounded-full border border-secondary/20">Cho phép</span>
+</td>
+<td class="py-5 px-2 text-sm text-on-surface-variant">1 giờ / ngày</td>
+<td class="py-5 px-2">
+<div class="flex justify-end">
+<div class="w-12 h-6 bg-primary rounded-full relative cursor-pointer p-1">
+<div class="bg-white w-4 h-4 rounded-full translate-x-6"></div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Usage Stats Section (1/3 width) -->
+<section class="space-y-6">
+<div class="bg-surface-container rounded-3xl p-8">
+<div class="mb-8">
+<h2 class="text-xl font-bold text-white">Thống kê sử dụng</h2>
+<p class="text-on-surface-variant text-sm mt-1">Thời gian truy cập hôm nay</p>
+</div>
+<!-- Horizontal Bar Chart -->
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-white">Youtube</span>
+<span class="text-on-surface-variant">1h 45m</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-dim to-secondary rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-white">Google Search</span>
+<span class="text-on-surface-variant">45m</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 rounded-full" style="width: 40%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-white">Canvas LMS</span>
+<span class="text-on-surface-variant">30m</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary/40 rounded-full" style="width: 25%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-white">Wikipedia</span>
+<span class="text-on-surface-variant">15m</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary/40 rounded-full" style="width: 12%"></div>
+</div>
+</div>
+</div>
+<div class="mt-10 p-6 bg-surface-container-high rounded-2xl border border-white/5">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-secondary">info</span>
+<span class="font-bold text-sm">Thông tin nhanh</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">Nguyễn An đã sử dụng 2.5 giờ hôm nay. Thời gian sử dụng giảm 12% so với hôm qua.</p>
+</div>
+</div>
+<!-- Small Bento Card: Device Status -->
+<div class="bg-gradient-to-br from-surface-container to-surface-container-low rounded-3xl p-8 border border-white/5">
+<div class="flex items-center justify-between">
+<div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">smartphone</span>
+</div>
+<span class="bg-green-500/20 text-green-400 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest">Trực tuyến</span>
+</div>
+<h3 class="text-white font-bold mt-4">Thiết bị hiện tại</h3>
+<p class="text-on-surface-variant text-sm">iPad Air - Đang mở Safari</p>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Shared Component) - Mobile Only -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#19191c]/80 backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t border-white/5">
+<button class="flex flex-col items-center justify-center text-gray-500">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Trang chủ</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#bd9dff] bg-[#262528] rounded-xl px-4 py-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Trẻ em</span>
+</button>
+<button class="flex flex-col items-center justify-center text-gray-500">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Thông báo</span>
+</button>
+<button class="flex flex-col items-center justify-center text-gray-500">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Cài đặt</span>
+</button>
+</nav>
+</body></html>

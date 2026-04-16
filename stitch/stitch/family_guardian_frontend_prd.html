@@ -1,0 +1,29 @@
+# FRONTEND - Family Guardian
+React + Vite + TypeScript
+
+## 1. TỔNG QUAN
+Frontend là React Vite app dành cho:
+- **Guardian (bố/mẹ):** Đăng nhập Google → quản lý tài khoản con → xem lịch sử, đặt rule, gửi thông báo.
+- **Child (con):** Nhận thông báo (view-only, không có dashboard quản lý).
+- **Admin:** Dashboard tổng quan hệ thống.
+
+## 2. CÔNG NGHỆ & THƯ VIỆN
+- Framework: React 18 + Vite 5
+- Ngôn ngữ: TypeScript
+- UI Library: shadcn/ui + Tailwind CSS
+- Routing: React Router DOM v6
+- State Management: Zustand
+- Server State: TanStack Query v5
+- Google Login: @react-oauth/google
+- Charts: Recharts
+- Icons: Lucide React
+- Notifications: Sonner
+- Real-time: @microsoft/signalr
+
+## 3. PAGES
+- **LoginPage:** Đăng nhập Google dành cho Guardian/Admin.
+- **DashboardPage:** Danh sách con, trạng thái online/offline, thống kê nhanh.
+- **ChildDetailPage:** Quản lý chi tiết (Quy tắc website, Lịch sử truy cập, Thống kê sử dụng, Thông báo đã gửi).
+- **NotificationsPage:** Quản lý thông báo tổng hợp.
+- **ChildNotificationsPage:** View dành riêng cho con để nhận thông báo.
+- **AdminPage:** Quản trị người dùng, log hệ thống và cấu hình.

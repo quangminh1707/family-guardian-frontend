@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Thông báo của tôi - Family Guardian</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#3c0089",
+                        "on-primary-container": "#2e006c",
+                        "inverse-primary": "#742fe5",
+                        "secondary-fixed": "#bfd1ff",
+                        "tertiary-container": "#ff8ed2",
+                        "error-container": "#a70138",
+                        "surface-container-low": "#131315",
+                        "secondary-container": "#005ac2",
+                        "surface-container-lowest": "#000000",
+                        "inverse-on-surface": "#565457",
+                        "tertiary-fixed": "#ff8ed2",
+                        "tertiary-fixed-dim": "#ef81c4",
+                        "on-tertiary-fixed-variant": "#6e1354",
+                        "on-primary-fixed": "#000000",
+                        "inverse-surface": "#fcf8fb",
+                        "on-secondary": "#001e4a",
+                        "surface-container": "#19191c",
+                        "on-tertiary-container": "#63054a",
+                        "primary-container": "#b28cff",
+                        "secondary": "#699cff",
+                        "background": "#0e0e10",
+                        "surface-variant": "#262528",
+                        "on-tertiary-fixed": "#3b002b",
+                        "on-surface-variant": "#adaaad",
+                        "on-background": "#f9f5f8",
+                        "primary-fixed": "#b28cff",
+                        "on-secondary-fixed": "#003271",
+                        "on-error": "#490013",
+                        "error-dim": "#d73357",
+                        "on-tertiary": "#701455",
+                        "on-primary-fixed-variant": "#390083",
+                        "surface-bright": "#2c2c2f",
+                        "on-error-container": "#ffb2b9",
+                        "outline-variant": "#48474a",
+                        "surface-tint": "#bd9dff",
+                        "surface-container-high": "#1f1f22",
+                        "tertiary": "#ffa5d9",
+                        "secondary-fixed-dim": "#a9c4ff",
+                        "primary": "#bd9dff",
+                        "outline": "#767577",
+                        "on-secondary-container": "#f7f7ff",
+                        "primary-dim": "#8a4cfc",
+                        "on-surface": "#f9f5f8",
+                        "surface-container-highest": "#262528",
+                        "error": "#ff6e84",
+                        "secondary-dim": "#699cff",
+                        "surface": "#0e0e10",
+                        "on-secondary-fixed-variant": "#004da8",
+                        "tertiary-dim": "#ef81c4",
+                        "surface-dim": "#0e0e10",
+                        "primary-fixed-dim": "#a67aff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .safe-pb {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Top Navigation Anchor (Mobile Focused) -->
+<header class="fixed top-0 w-full z-50 bg-[#131315]/70 backdrop-blur-xl h-16 flex items-center justify-between px-6">
+<h1 class="text-xl font-bold tracking-tight text-white font-headline">Thông báo của tôi</h1>
+<div class="relative">
+<span class="material-symbols-outlined text-white" data-icon="notifications">notifications</span>
+<span class="absolute -top-1 -right-1 bg-primary text-on-primary-fixed text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-28 px-4 max-w-md mx-auto">
+<!-- Welcome Hero Segment -->
+<section class="mb-8 mt-4">
+<div class="bg-surface-container-low rounded-3xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<h2 class="text-headline-md font-semibold text-white mb-2 leading-tight">Chào buổi sáng, Nam!</h2>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Bạn có 3 lời nhắc mới cho ngày hôm nay. Hãy cùng hoàn thành nhé!</p>
+</div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+</div>
+</section>
+<!-- Notifications List -->
+<div class="space-y-4">
+<!-- Notification Item: Warning (Unread) -->
+<div class="bg-surface-container-highest rounded-2xl p-5 relative overflow-hidden transition-all duration-300">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white leading-tight">Sắp hết thời gian dùng máy</h3>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">2 phút trước</span>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Chỉ còn 5 phút nữa là đến giờ nghỉ ngơi rồi. Hãy lưu lại kết quả nhé!</p>
+</div>
+</div>
+</div>
+<!-- Notification Item: Reminder (Unread) -->
+<div class="bg-surface-container-highest rounded-2xl p-5 relative overflow-hidden transition-all duration-300">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="event_repeat" style="font-variation-settings: 'FILL' 1;">event_repeat</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white leading-tight">Giờ làm bài tập về nhà</h3>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">15 phút trước</span>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Đã đến giờ ôn lại bài toán rồi. Cố gắng lên, Nam sẽ làm được!</p>
+</div>
+</div>
+</div>
+<!-- Notification Item: Info (Unread) -->
+<div class="bg-surface-container-highest rounded-2xl p-5 relative overflow-hidden transition-all duration-300">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white leading-tight">Bố đã xem báo cáo của bạn</h3>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">1 giờ trước</span>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Bố rất vui vì bạn đã hoàn thành mục tiêu đọc sách ngày hôm qua.</p>
+</div>
+</div>
+</div>
+<!-- Read Section Header -->
+<div class="pt-6 pb-2">
+<h4 class="text-label-md text-on-surface-variant tracking-[0.2em]">ĐÃ XEM</h4>
+</div>
+<!-- Notification Item: Generic (Read) -->
+<div class="bg-surface-container-low rounded-2xl p-5 opacity-60">
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="task_alt">task_alt</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-medium text-on-surface leading-tight">Hoàn thành thử thách tuần</h3>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Hôm qua</span>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Bạn đã đạt được huy hiệu "Người Chăm Chỉ"!</p>
+</div>
+</div>
+</div>
+<!-- Empty Space at bottom for aesthetic breathing -->
+<div class="h-10"></div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#19191c]/80 backdrop-blur-lg no-border border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:hidden">
+<a class="flex flex-col items-center justify-center text-gray-500 active:bg-white/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Trang chủ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 active:bg-white/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Trẻ em</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#bd9dff] bg-[#262528] rounded-xl px-4 py-1 tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Thông báo</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 active:bg-white/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Cài đặt</span>
+</a>
+</nav>
+<!-- Desktop Side Navigation (Hidden on mobile) -->
+<aside class="fixed left-0 top-0 h-full p-4 h-screen w-64 hidden md:flex flex-col bg-gradient-to-r from-[#131315] to-[#0e0e10] no-border">
+<div class="mb-10 px-4 py-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-fixed" data-icon="shield" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div>
+<h2 class="text-lg font-bold text-white">Family Guardian</h2>
+<p class="text-[10px] uppercase tracking-widest text-primary-fixed-dim">Ngươi Giám Hộ</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] text-sm">Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="family_restroom">family_restroom</span>
+<span class="font-['Inter'] text-sm">Trẻ em</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 bg-[#19191c] text-[#bd9dff] rounded-lg shadow-[inset_0_0_10px_rgba(138,76,252,0.1)] group" href="#">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-['Inter'] text-sm font-semibold">Thông báo</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-sm">Cài đặt</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="help">help</span>
+<span class="font-['Inter'] text-sm">Hỗ trợ</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-error-dim hover:text-error hover:bg-[#19191c] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="logout">logout</span>
+<span class="font-['Inter'] text-sm">Đăng xuất</span>
+</a>
+</div>
+</aside>
+</body></html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary": "#3c0089",
+            "on-primary-container": "#2e006c",
+            "inverse-primary": "#742fe5",
+            "secondary-fixed": "#bfd1ff",
+            "tertiary-container": "#ff8ed2",
+            "error-container": "#a70138",
+            "surface-container-low": "#131315",
+            "secondary-container": "#005ac2",
+            "surface-container-lowest": "#000000",
+            "inverse-on-surface": "#565457",
+            "tertiary-fixed": "#ff8ed2",
+            "tertiary-fixed-dim": "#ef81c4",
+            "on-tertiary-fixed-variant": "#6e1354",
+            "on-primary-fixed": "#000000",
+            "inverse-surface": "#fcf8fb",
+            "on-secondary": "#001e4a",
+            "surface-container": "#19191c",
+            "on-tertiary-container": "#63054a",
+            "primary-container": "#b28cff",
+            "secondary": "#699cff",
+            "background": "#0e0e10",
+            "surface-variant": "#262528",
+            "on-tertiary-fixed": "#3b002b",
+            "on-surface-variant": "#adaaad",
+            "on-background": "#f9f5f8",
+            "primary-fixed": "#b28cff",
+            "on-secondary-fixed": "#003271",
+            "on-error": "#490013",
+            "error-dim": "#d73357",
+            "on-tertiary": "#701455",
+            "on-primary-fixed-variant": "#390083",
+            "surface-bright": "#2c2c2f",
+            "on-error-container": "#ffb2b9",
+            "outline-variant": "#48474a",
+            "surface-tint": "#bd9dff",
+            "surface-container-high": "#1f1f22",
+            "tertiary": "#ffa5d9",
+            "secondary-fixed-dim": "#a9c4ff",
+            "primary": "#bd9dff",
+            "outline": "#767577",
+            "on-secondary-container": "#f7f7ff",
+            "primary-dim": "#8a4cfc",
+            "on-surface": "#f9f5f8",
+            "surface-container-highest": "#262528",
+            "error": "#ff6e84",
+            "secondary-dim": "#699cff",
+            "surface": "#0e0e10",
+            "on-secondary-fixed-variant": "#004da8",
+            "tertiary-dim": "#ef81c4",
+            "surface-dim": "#0e0e10",
+            "primary-fixed-dim": "#a67aff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0e0e10;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-effect {
+      background: rgba(25, 25, 28, 0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    .gradient-bg {
+      background: radial-gradient(circle at top left, rgba(138, 76, 252, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(105, 156, 255, 0.1) 0%, transparent 40%);
+    }
+    .cta-gradient {
+      background: linear-gradient(135deg, #8a4cfc 0%, #699cff 100%);
+    }
+    .ambient-glow {
+      box-shadow: 0 0 80px -20px rgba(138, 76, 252, 0.3);
+    }
+  </style>
+</head>
+<body class="text-on-background min-h-screen flex items-center justify-center p-6 gradient-bg">
+<!-- Background Decorative Elements -->
+<div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
+<div class="absolute top-[10%] left-[15%] w-96 h-96 bg-primary-dim/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[10%] right-[15%] w-80 h-80 bg-secondary-dim/10 rounded-full blur-[100px]"></div>
+</div>
+<main class="w-full max-w-md relative">
+<!-- Login Card -->
+<div class="glass-effect rounded-[2.5rem] p-10 md:p-12 ambient-glow border border-white/5 flex flex-col items-center text-center">
+<!-- Logo Section -->
+<div class="mb-10 flex flex-col items-center">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-highest flex items-center justify-center mb-4 shadow-inner">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">
+            shield
+          </span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight text-white">Family Guardian</h1>
+</div>
+<!-- Text Content -->
+<div class="space-y-4 mb-10">
+<h2 class="text-[28px] leading-tight font-semibold text-white">
+          Đăng nhập dành cho Phụ huynh
+        </h2>
+<p class="text-on-surface-variant text-base leading-relaxed">
+          Giám sát và bảo vệ hoạt động trực tuyến của con bạn một cách an toàn và chuyên nghiệp.
+        </p>
+</div>
+<!-- Action Button -->
+<button class="w-full group relative flex items-center justify-center gap-4 bg-white hover:bg-neutral-100 text-black font-semibold py-4 px-6 rounded-full transition-all duration-300 transform active:scale-[0.98] shadow-lg">
+<!-- Google Icon Placeholder -->
+<svg class="w-6 h-6" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path>
+</svg>
+<span class="text-lg">Đăng nhập với Google</span>
+</button>
+<!-- Security Badge (Optional UX Addition for "Secure Aesthetic") -->
+<div class="mt-10 flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-full">
+<span class="material-symbols-outlined text-primary text-sm">lock</span>
+<span class="text-[10px] uppercase tracking-[0.1em] font-bold text-on-surface-variant">Kết nối mã hóa 256-bit</span>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-10 text-center">
+<p class="text-on-surface-variant font-medium text-sm">
+        Dành cho bố/mẹ hoặc người giám hộ
+      </p>
+<div class="mt-8 flex justify-center gap-6">
+<a class="text-xs text-on-surface-variant hover:text-white transition-colors" href="#">Điều khoản dịch vụ</a>
+<a class="text-xs text-on-surface-variant hover:text-white transition-colors" href="#">Chính sách bảo mật</a>
+</div>
+</footer>
+</main>
+<!-- Illustration / Decorative Background Image Layer -->
+<div class="fixed inset-0 -z-20 opacity-30 overflow-hidden pointer-events-none">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="abstract digital security background with circuit patterns and glowing lines in deep violet and blue tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAYknvG9GT3fvceSUhe-Uce6uHJGW7Hv77oIV0QWKBx7CH4-sb-ED_oRyyU1xFHSMLnYKw5Aw8wBOFmpZm9fwsgxd8W9krZLrKbpnNUWIJ5IKKpdMCWn_9QReavxxmUSSsW5Cfv1CrUiPv5kMEND5X6K-06cpTNidZW5c3pTM3kzXGpuSdWwcsliPofkX37he8JHKnFGVxlyGsS-l_QAi3xJ_rOC3mTkIcvxS7VftI2m8SKO-oUasEWow3YmdoZtJpLyxM-Cj1q-_c')"></div>
+<div class="absolute inset-0 bg-background/80"></div>
+</div>
+</body></html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Family Guardian - Hệ thống Quản trị</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#3c0089",
+                        "on-primary-container": "#2e006c",
+                        "inverse-primary": "#742fe5",
+                        "secondary-fixed": "#bfd1ff",
+                        "tertiary-container": "#ff8ed2",
+                        "error-container": "#a70138",
+                        "surface-container-low": "#131315",
+                        "secondary-container": "#005ac2",
+                        "surface-container-lowest": "#000000",
+                        "inverse-on-surface": "#565457",
+                        "tertiary-fixed": "#ff8ed2",
+                        "tertiary-fixed-dim": "#ef81c4",
+                        "on-tertiary-fixed-variant": "#6e1354",
+                        "on-primary-fixed": "#000000",
+                        "inverse-surface": "#fcf8fb",
+                        "on-secondary": "#001e4a",
+                        "surface-container": "#19191c",
+                        "on-tertiary-container": "#63054a",
+                        "primary-container": "#b28cff",
+                        "secondary": "#699cff",
+                        "background": "#0e0e10",
+                        "surface-variant": "#262528",
+                        "on-tertiary-fixed": "#3b002b",
+                        "on-surface-variant": "#adaaad",
+                        "on-background": "#f9f5f8",
+                        "primary-fixed": "#b28cff",
+                        "on-secondary-fixed": "#003271",
+                        "on-error": "#490013",
+                        "error-dim": "#d73357",
+                        "on-tertiary": "#701455",
+                        "on-primary-fixed-variant": "#390083",
+                        "surface-bright": "#2c2c2f",
+                        "on-error-container": "#ffb2b9",
+                        "outline-variant": "#48474a",
+                        "surface-tint": "#bd9dff",
+                        "surface-container-high": "#1f1f22",
+                        "tertiary": "#ffa5d9",
+                        "secondary-fixed-dim": "#a9c4ff",
+                        "primary": "#bd9dff",
+                        "outline": "#767577",
+                        "on-secondary-container": "#f7f7ff",
+                        "primary-dim": "#8a4cfc",
+                        "on-surface": "#f9f5f8",
+                        "surface-container-highest": "#262528",
+                        "error": "#ff6e84",
+                        "secondary-dim": "#699cff",
+                        "surface": "#0e0e10",
+                        "on-secondary-fixed-variant": "#004da8",
+                        "tertiary-dim": "#ef81c4",
+                        "surface-dim": "#0e0e10",
+                        "primary-fixed-dim": "#a67aff"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(25, 25, 28, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-full p-4 h-screen w-64 hidden md:flex flex-col bg-[#131315] z-50 bg-gradient-to-r from-[#131315] to-[#0e0e10]">
+<div class="flex items-center gap-3 px-2 mb-10">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-dim to-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight">Family Guardian</h1>
+<p class="text-[10px] text-primary tracking-widest uppercase font-bold">Ngươi Giám Hộ</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-[#19191c] text-[#bd9dff] rounded-lg shadow-[inset_0_0_10px_rgba(138,76,252,0.1)] transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-medium text-sm">Trẻ em</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-medium text-sm">Thông báo</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-gray-200 hover:bg-[#19191c] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium text-sm">Cài đặt</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-white/5 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-error transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium text-sm">Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-64 p-6 lg:p-10 pb-24 md:pb-10">
+<!-- Top row: Header -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-2 block">Quản trị hệ thống</span>
+<h2 class="text-4xl font-bold tracking-tight text-white leading-tight">Admin Dashboard</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container rounded-full px-4 py-2 flex items-center gap-3 border border-outline-variant/20">
+<div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-sm font-medium text-on-surface-variant">System Status: Stable</span>
+</div>
+</div>
+</header>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-2xl relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-medium mb-1">Total Guardians</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">1,284</h3>
+<div class="mt-4 flex items-center gap-2 text-xs font-bold text-green-400">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12% tháng này</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-8xl">shield_person</span>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-2xl relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-medium mb-1">Total Children</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">3,492</h3>
+<div class="mt-4 flex items-center gap-2 text-xs font-bold text-primary">
+<span class="material-symbols-outlined text-sm">groups</span>
+<span>An toàn &amp; Bảo mật</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-8xl">child_care</span>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-low p-6 rounded-2xl relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-medium mb-1">Active Now</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">856</h3>
+<div class="mt-4 flex items-center gap-2 text-xs font-bold text-secondary">
+<span class="material-symbols-outlined text-sm">sensors</span>
+<span>Đang trực tuyến</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-8xl">monitoring</span>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-container-low p-6 rounded-2xl relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-medium mb-1">Requests Today</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">42</h3>
+<div class="mt-4 flex items-center gap-2 text-xs font-bold text-tertiary">
+<span class="material-symbols-outlined text-sm">pending_actions</span>
+<span>Chờ xử lý</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-8xl">notification_important</span>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="mb-8 border-b border-outline-variant/10 overflow-x-auto no-scrollbar">
+<div class="flex gap-10 min-w-max">
+<button class="pb-4 text-primary font-semibold border-b-2 border-primary-dim transition-all">Người dùng</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-white transition-all">Lịch sử toàn hệ thống</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-white transition-all">Cài đặt hệ thống</button>
+</div>
+</div>
+<!-- User Data Table Section -->
+<section class="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_40px_-15px_rgba(0,0,0,0.5)]">
+<div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="relative w-full sm:w-80">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-variant border-none rounded-xl pl-12 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 transition-all placeholder:text-on-surface-variant/50" placeholder="Tìm kiếm người dùng..." type="text"/>
+</div>
+<button class="bg-gradient-to-r from-primary-dim to-secondary px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                    Thêm người dùng
+                </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50">
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">ID</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Người dùng</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Email</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Vai trò</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Trạng thái</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right">Thao tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="px-6 py-4 text-sm text-on-surface-variant">#FG-8821</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="professional male portrait with neutral background and soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb4qOk5KCCh1ZtIRTk_lUGOyILAKE-aJM0ibOmfwksg6ClTvdjgPy9H2JmNshrCmKgus-cnMzpF30wI6WTpMVk5gV2avqXkdrfbAw00OzmWLfeW4Qce8CpyCY0H4Dx-HmhlKVSRgFPWlvxkHiI6VgrQ3rXtfINeRoMaLl56P0bQ3YCLDbfSeOQtINF0aBfjUXJhNUloaY0Ujk9jUOZXXywUEM3s_kVHLXnjhUUgoXeQg6j1ARYTOz-rJNCXopJeP8Px6mDaq4YaoM"/>
+</div>
+<span class="text-sm font-semibold text-white">Nguyễn Văn An</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">an.nguyen@guardian.com</td>
+<td class="px-6 py-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase">Guardian</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<button class="w-10 h-5 bg-primary/20 rounded-full relative transition-colors border border-primary/30">
+<div class="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-primary rounded-full shadow-lg"></div>
+</button>
+<span class="text-xs text-white">Hoạt động</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="px-6 py-4 text-sm text-on-surface-variant">#FG-7654</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a professional woman smiling in bright daylight background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHoZGGYufMkjF_5nD8_FodnYgQPrSdMVHrHuJEQhjT8zfZtn2DCF2HcYHUiNH904rgCGUhlK3jxw4IIu3DMAFUP8XpJsj_Z8ZLaXtdluU9_dv4JkqrweVCVahIJIsE1PV5r3s0xHKCnRfOnHKIz_TtJQfYUgTmT2sj1SUiMY8D3ibAq3P8FpiaEL9czyCZyy_0El8NKPYCgOVWBm19ZHzhPJZ_6wlQHPDcyGx3MQ9jleZWaG4187MThW_CNTVm0HuzcVjFt2Wp2Uo"/>
+</div>
+<span class="text-sm font-semibold text-white">Trần Thị Mai</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">mai.tran@guardian.com</td>
+<td class="px-6 py-4">
+<span class="bg-secondary/10 text-secondary text-[10px] font-bold px-3 py-1 rounded-full uppercase">Admin</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<button class="w-10 h-5 bg-primary/20 rounded-full relative transition-colors border border-primary/30">
+<div class="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-primary rounded-full shadow-lg"></div>
+</button>
+<span class="text-xs text-white">Hoạt động</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="px-6 py-4 text-sm text-on-surface-variant">#FG-9902</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="headshot of a man with professional glasses and dark hair on neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3chFWXAvAVM8FHtkVXEbnqd1RIf6kQkEkx6OgOim4SrsGU9nitrGQu4neoFoL3iFhAkyFIVIskPYgrnesLDJX5IJv3Gnm7j0q2pgw5uCx-iaARJM2qV7hBoQvC-dyuBhXCXGptyIxpl2RCuygAc4IO8-ZXTIU8Yn7RkbO_OgAtHVg5myNOFQQQHWpTNCTgpM29vMa-OrqK_GZnL6gFj3fIMLbHa1Fupt4ZYEi-XwazkKFCz4UabS0294L4NDbAL0A9CxANP4w0MA"/>
+</div>
+<span class="text-sm font-semibold text-white">Lê Minh Tuấn</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">tuan.le@guardian.com</td>
+<td class="px-6 py-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase">Guardian</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<button class="w-10 h-5 bg-surface-variant rounded-full relative transition-colors border border-outline-variant/30">
+<div class="absolute left-1 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-on-surface-variant rounded-full"></div>
+</button>
+<span class="text-xs text-on-surface-variant">Ngoại tuyến</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 border-t border-outline-variant/10 flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Hiển thị 10 trong số 1,284 người dùng</span>
+<div class="flex gap-2">
+<button class="p-2 bg-surface-variant rounded-lg text-on-surface-variant hover:text-white transition-all active:scale-90">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="p-2 bg-primary-dim rounded-lg text-white font-bold text-xs px-4">1</button>
+<button class="p-2 bg-surface-variant rounded-lg text-on-surface-variant hover:text-white transition-all active:scale-90 px-4 text-xs font-bold">2</button>
+<button class="p-2 bg-surface-variant rounded-lg text-on-surface-variant hover:text-white transition-all active:scale-90 px-4 text-xs font-bold">3</button>
+<button class="p-2 bg-surface-variant rounded-lg text-on-surface-variant hover:text-white transition-all active:scale-90">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Shared Component - Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#19191c]/80 backdrop-blur-lg rounded-t-2xl md:hidden border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-[#bd9dff] bg-[#262528] rounded-xl px-4 py-1 active:bg-white/10 transition-transform tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Trang chủ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 active:bg-white/10 transition-transform tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Trẻ em</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 active:bg-white/10 transition-transform tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Thông báo</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 active:bg-white/10 transition-transform tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Cài đặt</span>
+</a>
+</nav>
+</body></html>
