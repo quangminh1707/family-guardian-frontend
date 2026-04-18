@@ -12,10 +12,9 @@ import {
   Bell, 
   ShieldCheck, 
   Activity, 
-  Settings,
   AlertCircle,
   Calendar,
-  LayoutGrid
+  Clock
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -24,8 +23,10 @@ import { formatRelativeTime } from '../lib/formatters';
 import WebsiteCard from '../components/websites/WebsiteCard';
 import AddWebsiteModal from '../components/websites/AddWebsiteModal';
 import AccessLogTable from '../components/logs/AccessLogTable';
-import UsageHistoryChart from '../components/logs/UsageHistoryChart';
 import { Skeleton } from '../components/ui/skeleton';
+import { SessionHistoryTab } from '../components/logs/SessionHistoryTab';
+import { UsageSummaryTab } from '../components/logs/UsageSummaryTab';
+import ProxySettingsModal from '../components/proxy/ProxySettingsModal';
 
 export default function ChildDetailPage() {
   const { childId } = useParams();
@@ -51,16 +52,12 @@ export default function ChildDetailPage() {
   const { data: websites, isLoading: isWebsitesLoading } = useQuery({
     queryKey: ['websites', id],
     queryFn: () => websitesApi.getWebsites(id).then(res => res.data),
+    refetchInterval: 60_000, // Cập nhật mỗi phút để thấy usage mới
   });
 
   const { data: logsData, isLoading: isLogsLoading } = useQuery({
     queryKey: ['logs', id, logPage],
     queryFn: () => logsApi.getAccessLogs(id, { fromDate, toDate, page: logPage, pageSize }).then(res => res.data),
-  });
-
-  const { data: usageHistory, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['usage', id, fromDate, toDate],
-    queryFn: () => logsApi.getUsageHistory(id, { fromDate, toDate }).then(res => res.data),
   });
 
   if (isChildLoading) return (
@@ -125,10 +122,7 @@ export default function ChildDetailPage() {
             <Bell className="w-4 h-4" />
             Gửi thông báo
           </Button>
-          <Button variant="outline" className="rounded-2xl h-11 px-5 border-gray-100 bg-white hover:bg-violet-50 hover:border-violet-100 hover:text-violet-600 transition-all font-bold text-xs uppercase tracking-wider gap-2">
-            <Settings className="w-4 h-4" />
-            Cài đặt proxy
-          </Button>
+          <ProxySettingsModal childId={id} />
         </div>
       </div>
 
@@ -138,11 +132,15 @@ export default function ChildDetailPage() {
           <TabsList className="bg-white p-1 rounded-2xl border border-gray-100 shadow-sm inline-flex">
             <TabsTrigger value="websites" className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-wider data-[state=active]:bg-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-200 transition-all">
               <Globe className="w-4 h-4 mr-2" />
-              Websites được phép
+              Websites
             </TabsTrigger>
             <TabsTrigger value="history" className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-wider data-[state=active]:bg-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-200 transition-all">
               <History className="w-4 h-4 mr-2" />
-              Lịch sử truy cập
+              Lịch sử
+            </TabsTrigger>
+            <TabsTrigger value="sessions" className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-wider data-[state=active]:bg-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-200 transition-all">
+              <Clock className="w-4 h-4 mr-2" />
+              Phiên truy cập
             </TabsTrigger>
             <TabsTrigger value="stats" className="rounded-xl px-6 py-2.5 font-bold text-xs uppercase tracking-wider data-[state=active]:bg-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-200 transition-all">
               <BarChart3 className="w-4 h-4 mr-2" />
@@ -189,7 +187,6 @@ export default function ChildDetailPage() {
                   <Calendar className="w-4 h-4 text-gray-400" />
                   <span className="text-xs font-bold text-gray-900 uppercase tracking-widest">{fromDate} đến {toDate}</span>
                 </div>
-                {/* Advanced filters could go here */}
               </div>
               
               {isLogsLoading ? (
@@ -206,57 +203,14 @@ export default function ChildDetailPage() {
            </div>
         </TabsContent>
 
-        {/* Tab 3: Stats */}
+        {/* Tab 3: Sessions */}
+        <TabsContent value="sessions" className="animate-in fade-in slide-in-from-bottom-4 duration-500 m-0">
+           <SessionHistoryTab childId={id} />
+        </TabsContent>
+
+        {/* Tab 4: Stats */}
         <TabsContent value="stats" className="animate-in fade-in slide-in-from-bottom-4 duration-500 m-0">
-           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                 <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                    <div className="flex items-center gap-3 mb-10">
-                       <div className="bg-violet-50 p-2 rounded-xl">
-                          <BarChart3 className="w-6 h-6 text-violet-600" />
-                       </div>
-                       <div>
-                          <h4 className="text-xl font-bold text-gray-900 leading-none">Phân bổ thời gian</h4>
-                          <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-widest">7 ngày gần nhất</p>
-                       </div>
-                    </div>
-                    {isStatsLoading ? (
-                       <Skeleton className="h-[400px] w-full rounded-2xl" />
-                    ) : usageHistory && usageHistory.length > 0 ? (
-                       <UsageHistoryChart data={usageHistory} />
-                    ) : (
-                       <div className="h-[400px] flex items-center justify-center text-gray-300 font-bold uppercase tracking-widest text-xs">Chưa có dữ liệu thống kê</div>
-                    )}
-                 </div>
-              </div>
-
-              <div className="space-y-6">
-                 <div className="bg-gray-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
-                    <div className="relative z-10 space-y-6">
-                       <div className="flex items-center justify-between">
-                          <LayoutGrid className="w-8 h-8 text-violet-400" />
-                          <Badge className="bg-violet-600 text-[10px] py-1 border-none font-black">PREMIUM</Badge>
-                       </div>
-                       <div>
-                          <h4 className="text-2xl font-black tracking-tight leading-8 uppercase">Phân tích<br />thông minh</h4>
-                          <p className="text-sm text-gray-400 mt-2 font-medium">Hệ thống đang thu thập dữ liệu để đưa ra các cảnh báo hành vi sớm cho phụ huynh.</p>
-                       </div>
-                       <Button className="w-full h-12 rounded-2xl bg-white text-gray-900 font-bold uppercase tracking-wider hover:bg-violet-50">Xem chi tiết</Button>
-                    </div>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/20 blur-[60px] group-hover:bg-violet-600/30 transition-all" />
-                 </div>
-
-                 <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                    <h5 className="font-bold text-gray-900 uppercase tracking-widest text-[11px] mb-6">Ghi chú gần nhất</h5>
-                    <div className="space-y-4">
-                       <div className="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
-                          <div className="w-2 h-2 rounded-full bg-violet-500 mt-1.5 shrink-0" />
-                          <p className="text-xs text-gray-600 leading-relaxed font-medium">Hệ thống đã tự động chặn 12 yêu cầu truy cập không an toàn hôm nay.</p>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-           </div>
+           <UsageSummaryTab childId={id} />
         </TabsContent>
       </Tabs>
     </div>

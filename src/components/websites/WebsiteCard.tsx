@@ -66,29 +66,43 @@ export default function WebsiteCard({ childId, website }: WebsiteCardProps) {
       </div>
 
       <div className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest">
-            <div className="flex items-center gap-2 text-gray-400">
-               <Clock className="w-3 h-3" />
-               Hôm nay: {formatDuration(website.todaySeconds)}
-            </div>
-            {website.timeLimitMinutes && (
-              <span className={cn(
-                "px-2 py-0.5 rounded-full",
-                website.limitExceeded ? "bg-red-100 text-red-600" : "bg-violet-100 text-violet-600"
-              )}>
-                {usagePercent}%
-              </span>
-            )}
+        <div className="space-y-3">
+          <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
+            <span className="text-gray-400 flex items-center gap-1.5">
+              <Clock className="w-3 h-3" />
+              Sử dụng
+            </span>
+            <span className={cn(
+              "font-mono",
+              website.limitExceeded ? "text-red-600" : "text-gray-700"
+            )}>
+              {formatDuration(website.todaySeconds)}
+              {website.timeLimitMinutes && (
+                <span className="text-gray-300 font-normal"> / {formatDuration(website.timeLimitMinutes * 60)}</span>
+              )}
+            </span>
           </div>
-          <Progress 
-            value={usagePercent || 0} 
-            className="h-2 rounded-full bg-gray-100" 
-            indicatorClassName={cn(
-              "transition-all duration-500",
-              website.limitExceeded ? "bg-red-500 rotate-gradient" : "bg-violet-600"
-            )}
-          />
+          
+          {website.timeLimitMinutes && (
+            <div className="space-y-2">
+              <Progress 
+                value={usagePercent || 0} 
+                className="h-2 rounded-full bg-gray-100" 
+                indicatorClassName={cn(
+                  "transition-all duration-500",
+                  website.limitExceeded ? "bg-red-500" : "bg-violet-600"
+                )}
+              />
+              <div className="flex justify-end">
+                <span className={cn(
+                  "text-[9px] font-black px-2 py-0.5 rounded-lg uppercase tracking-tighter",
+                  website.limitExceeded ? "bg-red-100 text-red-600" : "bg-violet-50 text-violet-600"
+                )}>
+                  {usagePercent}% đã dùng
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-2">

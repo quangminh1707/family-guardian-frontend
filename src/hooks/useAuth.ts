@@ -8,9 +8,9 @@ export const useAuth = () => {
   return {
     user: user as User | null,
     isAuthenticated,
-    isGuardian: user?.role === 'guardian',
-    isChild: user?.role === 'child',
-    isAdmin: user?.role === 'admin',
+    isGuardian: user && user.role === 'Guardian',
+    isChild: user && user.role === 'Child',
+    isAdmin: user && user.role === 'Admin',
     logout,
     updateToken,
   }
