@@ -511,4 +511,3 @@ const { data: websites } = useQuery({
 - [ ] Cập nhật `ChildDetailPage.tsx`: đổi từ 3 tab → 4 tab, thêm 2 tab mới
 - [ ] Cập nhật `WebsiteCard.tsx`: thêm progress bar usage hôm nay
 - [ ] Thêm `refetchInterval: 60_000` vào query websites
-- [ ] Test: thêm domain → truy cập qua proxy → xem thời gian cập nhật trong app

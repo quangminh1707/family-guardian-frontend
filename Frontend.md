@@ -642,7 +642,7 @@ Nguyen An
 an@gmail.com
 [🟢 Đang online | ⚫ Offline - 5 phút trước]
 
-                    [Nút "Gửi thông báo" — outline]  [Nút "Cài đặt proxy" — outline]
+                    [Nút "Gửi thông báo" — outline]
 ```
 
 ### 3 Tabs:

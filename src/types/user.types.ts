@@ -16,5 +16,6 @@ export interface ChildUser extends User {
   ipAddress?: string;
   activeWebsitesCount?: number;
   todayTotalSeconds?: number;
+  filterEnabled?: boolean;  // NEW: Web filter toggle status
 }
 

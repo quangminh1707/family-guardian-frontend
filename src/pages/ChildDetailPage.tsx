@@ -26,7 +26,7 @@ import AccessLogTable from '../components/logs/AccessLogTable';
 import { Skeleton } from '../components/ui/skeleton';
 import { SessionHistoryTab } from '../components/logs/SessionHistoryTab';
 import { UsageSummaryTab } from '../components/logs/UsageSummaryTab';
-import ProxySettingsModal from '../components/proxy/ProxySettingsModal';
+import { FilterToggle } from '../components/children/FilterToggle';
 
 export default function ChildDetailPage() {
   const { childId } = useParams();
@@ -122,9 +122,14 @@ export default function ChildDetailPage() {
             <Bell className="w-4 h-4" />
             Gửi thông báo
           </Button>
-          <ProxySettingsModal childId={id} />
         </div>
       </div>
+
+      {/* Filter Toggle */}
+      <FilterToggle 
+        childId={id} 
+        initialEnabled={child.filterEnabled ?? false}
+      />
 
       {/* Tabs */}
       <Tabs defaultValue="websites" className="space-y-8">

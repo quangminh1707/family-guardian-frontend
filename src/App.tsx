@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ChildDetailPage from './pages/ChildDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
+import ExtensionGuidePage from './pages/ExtensionGuidePage';
 
 function AuthenticatedApp() {
   // Activate real-time features
@@ -35,6 +36,9 @@ export default function App() {
           path="/login" 
           element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
         />
+        
+        {/* Public routes */}
+        <Route path="/guide/extension" element={<ExtensionGuidePage />} />
         
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />

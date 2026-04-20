@@ -68,6 +68,19 @@ export default function ChildCard({ child }: ChildCardProps) {
           </div>
         </div>
 
+        {/* Filter Status Badge */}
+        <div className="mb-6">
+          <div className={cn(
+            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold",
+            child.filterEnabled 
+              ? "bg-green-100 text-green-700" 
+              : "bg-gray-100 text-gray-500"
+          )}>
+            <span>🛡️ Bộ lọc:</span>
+            <span>{child.filterEnabled ? '✅ BẬT' : '❌ TẮT'}</span>
+          </div>
+        </div>
+
         <div className="flex items-center justify-center w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-violet-200 group-hover:shadow-violet-300">
           <span>Quản lý tài khoản</span>
           <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

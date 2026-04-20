@@ -10,14 +10,4 @@ export const childrenApi = {
   
   unlinkChild: (childId: number) => 
     api.delete(`/children/${childId}`),
-  
-  // IP Mappings (for proxy identification)
-  getIpMappings: (childId: number) => 
-    api.get(`/children/${childId}/ip-mappings`),
-  
-  addIpMapping: (childId: number, data: { ipAddress: string; deviceName?: string }) => 
-    api.post(`/children/${childId}/ip-mappings`, data),
-  
-  removeIpMapping: (childId: number, mappingId: number) => 
-    api.delete(`/children/${childId}/ip-mappings/${mappingId}`),
 };
