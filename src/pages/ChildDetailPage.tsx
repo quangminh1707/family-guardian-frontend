@@ -52,7 +52,7 @@ export default function ChildDetailPage() {
   const { data: websites, isLoading: isWebsitesLoading } = useQuery({
     queryKey: ['websites', id],
     queryFn: () => websitesApi.getWebsites(id).then(res => res.data),
-    refetchInterval: 60_000, // Cập nhật mỗi phút để thấy usage mới
+    refetchInterval: 30_000, // Cập nhật mỗi phút để thấy usage mới
   });
 
   const { data: logsData, isLoading: isLogsLoading } = useQuery({
@@ -130,6 +130,7 @@ export default function ChildDetailPage() {
         childId={id} 
         initialEnabled={child.filterEnabled ?? false}
       />
+      
 
       {/* Tabs */}
       <Tabs defaultValue="websites" className="space-y-8">
@@ -166,10 +167,54 @@ export default function ChildDetailPage() {
              </div>
            ) : websites && websites.length > 0 ? (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {websites.map(web => (
-                 <WebsiteCard key={web.id} childId={id} website={web} />
-               ))}
-             </div>
+  {websites.map(web => {
+    const usedPercent = web.timeLimitMinutes
+      ? Math.min(100, (web.todaySeconds / (web.timeLimitMinutes * 60)) * 100)
+      : 0;
+    const remainingMinutes = web.timeLimitMinutes
+      ? Math.max(0, web.timeLimitMinutes - Math.floor(web.todaySeconds / 60))
+      : null;
+    const usedMinutes = Math.floor(web.todaySeconds / 60);
+
+    return (
+      <div key={web.id} className="space-y-3">
+        <WebsiteCard childId={id} website={web} />
+
+        {/* Thanh thời gian — chỉ hiện khi có giới hạn */}
+        {web.timeLimitMinutes && (
+          <div className="bg-white rounded-2xl px-5 py-4 border border-gray-100 shadow-sm space-y-2">
+            <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <span>⏱ Thời gian hôm nay</span>
+              <span className={web.limitExceeded ? "text-red-500" : "text-gray-700"}>
+                {usedMinutes}m / {web.timeLimitMinutes}m
+              </span>
+            </div>
+
+            {/* Progress bar */}
+            <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+              <div
+                className={`h-2.5 rounded-full transition-all duration-500 ${
+                  web.limitExceeded
+                    ? "bg-red-500"
+                    : usedPercent > 75
+                    ? "bg-orange-400"
+                    : "bg-violet-500"
+                }`}
+                style={{ width: `${usedPercent}%` }}
+              />
+            </div>
+
+            <div className="text-[11px] text-gray-400 font-medium">
+              {web.limitExceeded
+                ? "⛔ Đã hết thời gian"
+                : `Còn lại ${remainingMinutes} phút`}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  })}
+</div>
            ) : (
              <div className="bg-white rounded-[3rem] p-20 text-center border border-dashed border-gray-200 max-w-2xl mx-auto">
                <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">

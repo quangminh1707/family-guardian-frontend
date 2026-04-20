@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // ✅ thêm useEffect
 import { Switch } from '@/components/ui/switch';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/axios';
 import { Loader2 } from 'lucide-react';
+
 
 interface FilterToggleProps {
   childId: number;
@@ -14,27 +15,30 @@ export function FilterToggle({ childId, initialEnabled, onToggle }: FilterToggle
   const [enabled, setEnabled] = useState(initialEnabled);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+   useEffect(() => {
+    setEnabled(initialEnabled);
+  }, [initialEnabled]);
 
-  const handleToggle = async (newValue: boolean) => {
-    setIsLoading(true);
-    try {
-      await api.patch(`/children/${childId}/filter`, {
-        filterEnabled: newValue, 
-      });
-      
-      setEnabled(newValue);
-      onToggle?.(newValue);
-      
-      // Invalidate children queries to refresh UI
-      queryClient.invalidateQueries({ queryKey: ['children'] });
-    } catch (error) {
-      console.error('Failed to toggle filter:', error);
-      // Revert on error
-      setEnabled(!newValue);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ const handleToggle = async (newValue: boolean) => {
+  setIsLoading(true);
+  try {
+    await api.patch(`/children/${childId}/filter`, {
+      filterEnabled: newValue,
+    });
+
+    setEnabled(newValue);
+    onToggle?.(newValue);
+
+    // ✅ Invalidate cả 2 để dashboard + trang detail đều cập nhật
+    queryClient.invalidateQueries({ queryKey: ['children'] });
+    queryClient.invalidateQueries({ queryKey: ['child', childId] });
+  } catch (error) {
+    console.error('Failed to toggle filter:', error);
+    setEnabled(!newValue); // Revert on error
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
