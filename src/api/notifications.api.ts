@@ -4,10 +4,16 @@ import type { Notification } from '../types/notification.types';
 export const notificationsApi = {
   getNotifications: () => 
     api.get<Notification[]>('/notifications'),
+
+  getUnread: () =>
+    api.get<Notification[]>('/notifications/unread'),
   
   markAsRead: (id: number) => 
-    api.post(`/notifications/${id}/read`),
+    api.patch(`/notifications/${id}/read`),
+
+  markAllAsRead: () =>
+    api.patch('/notifications/read-all'),
   
   sendNotification: (childId: number, data: { title: string; message: string; type: string }) => 
-    api.post(`/notifications/send-to-child/${childId}`, data),
+    api.post(`/notifications/to-child/${childId}`, data),
 };

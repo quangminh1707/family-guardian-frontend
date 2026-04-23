@@ -61,7 +61,6 @@ export default function WebsiteCard({ childId, website }: WebsiteCardProps) {
         <Switch 
           checked={website.isActive} 
           onCheckedChange={() => toggleMutation.mutate()}
-          className="data-[state=checked]:bg-violet-600"
         />
       </div>
 

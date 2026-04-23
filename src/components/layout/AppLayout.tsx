@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { Menu } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { useExtensionMonitor } from '../../hooks/useExtensionMonitor';
+
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    useExtensionMonitor();
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased text-gray-900">

@@ -17,7 +17,7 @@ import { Skeleton } from '../components/ui/skeleton';
 
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
-  const { setNotifications } = useNotificationStore();
+  const { setNotifications, markAsRead: markInStore } = useNotificationStore();
 
   const { data: notifications, isLoading } = useQuery({
     queryKey: ['notifications'],
@@ -29,8 +29,16 @@ export default function NotificationsPage() {
 
   const markAsReadMutation = useMutation({
     mutationFn: (id: number) => notificationsApi.markAsRead(id),
+    onMutate: (id) => markInStore(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
   });
+
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => notificationsApi.markAllAsRead(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+  });
+
+  const hasUnread = notifications?.some(n => !n.isRead);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -47,6 +55,7 @@ export default function NotificationsPage() {
       default: return 'border-l-violet-500';
     }
   };
+  
 
   return (
     <div className="max-w-4xl mx-auto space-y-10">
@@ -56,7 +65,12 @@ export default function NotificationsPage() {
             <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">Thông báo</h2>
             <p className="text-gray-500 font-medium">Theo dõi các hoạt động và cảnh báo quan trọng từ hệ thống.</p>
          </div>
-         <Button variant="outline" className="rounded-2xl h-12 border-gray-100 font-bold uppercase tracking-widest text-[10px] gap-2">
+         <Button 
+            variant="outline" 
+            onClick={() => markAllAsReadMutation.mutate()}
+            disabled={!hasUnread || markAllAsReadMutation.isPending}
+            className="rounded-2xl h-12 border-gray-100 font-bold uppercase tracking-widest text-[10px] gap-2 disabled:opacity-40"
+          >
             <CheckCircle2 className="w-4 h-4" />
             Đánh dấu tất cả đã đọc
          </Button>
@@ -92,6 +106,7 @@ export default function NotificationsPage() {
                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
                          <Clock className="w-3 h-3" />
                          {formatRelativeTime(n.createdAt)}
+                         
                        </span>
                     </div>
                     <p className={cn("text-sm leading-relaxed", n.isRead ? "text-gray-400" : "text-gray-500")}>

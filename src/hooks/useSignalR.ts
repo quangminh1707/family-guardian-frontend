@@ -12,13 +12,14 @@ export function useSignalR() {
 
   useEffect(() => {
     if (!isAuthenticated || !accessToken) return;
-
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl(import.meta.env.VITE_SIGNALR_URL, {
-        accessTokenFactory: () => useAuthStore.getState().accessToken ?? '',
-      })
-      .withAutomaticReconnect([0, 2000, 5000, 10000])
-      .build();
+const connection = new signalR.HubConnectionBuilder()
+  .withUrl(import.meta.env.VITE_SIGNALR_URL, {
+    accessTokenFactory: () => useAuthStore.getState().accessToken ?? '',
+    // ✅ Thêm transport để tránh negotiate fail
+    transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
+  })
+  .withAutomaticReconnect([0, 2000, 5000, 10000])
+  .build();
 
     // Child status changed -> update lists
     connection.on('ChildStatusChanged', (data: { userId: number; isOnline: boolean; lastSeenAt: string }) => {
