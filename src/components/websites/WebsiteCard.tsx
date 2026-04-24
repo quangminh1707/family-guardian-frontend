@@ -95,7 +95,7 @@ export default function WebsiteCard({ childId, website }: WebsiteCardProps) {
               <div className="flex justify-end">
                 <span className={cn(
                   "text-[9px] font-black px-2 py-0.5 rounded-lg uppercase tracking-tighter",
-                  website.limitExceeded ? "bg-red-100 text-red-600" : "bg-violet-50 text-violet-600"
+                  website.limitExceeded ? "bg-red-100 text-red-600 " : "bg-violet-50 text-violet-600"
                 )}>
                   {usagePercent}% đã dùng
                 </span>

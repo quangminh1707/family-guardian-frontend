@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import WarningConfigModal from '../components/WarningConfigModal';
 import { useQuery } from '@tanstack/react-query';
 import { childrenApi } from '../api/children.api';
 import { websitesApi } from '../api/websites.api';
@@ -34,6 +35,8 @@ export default function ChildDetailPage() {
 
   const [logPage, setLogPage] = useState(1);
   const pageSize = 10;
+  
+  const [showWarningConfig, setShowWarningConfig] = useState(false);
   
   // Date range for logs/stats
   const [fromDate] = useState(() => {
@@ -118,6 +121,14 @@ export default function ChildDetailPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowWarningConfig(true)}
+            className="rounded-2xl h-11 px-5 border-gray-100 bg-white hover:bg-orange-50 hover:border-orange-100 hover:text-orange-600 transition-all font-bold text-xs uppercase tracking-wider gap-2"
+          >
+            <AlertCircle className="w-4 h-4" />
+            Cấu hình cảnh báo
+          </Button>
           <Button variant="outline" className="rounded-2xl h-11 px-5 border-gray-100 bg-white hover:bg-violet-50 hover:border-violet-100 hover:text-violet-600 transition-all font-bold text-xs uppercase tracking-wider gap-2">
             <Bell className="w-4 h-4" />
             Gửi thông báo
@@ -263,6 +274,19 @@ export default function ChildDetailPage() {
            <UsageSummaryTab childId={id} />
         </TabsContent>
       </Tabs>
+
+      {showWarningConfig && child && (
+        <WarningConfigModal
+          childId={id}
+          childName={child.fullName}
+          websites={websites?.map((w: any) => ({
+            id: w.id,
+            domain: w.domain,
+            timeLimitMinutes: w.timeLimitMinutes,
+          })) ?? []}
+          onClose={() => setShowWarningConfig(false)}
+        />
+      )}
     </div>
   );
 }

@@ -70,6 +70,25 @@ export function useExtensionMonitor() {
       queryClient.invalidateQueries({ queryKey: ['child', data.childId] });
     });
 
+    // ─── Lắng nghe cảnh báo thời gian ──────────────────────────────
+    connection.on('TimeWarning', (data: {
+      childId: number;
+      childName: string;
+      domain: string;
+      message: string;
+      remainingSeconds: number;
+      notificationId: number;
+    }) => {
+      toast.warning(`⏰ ${data.childName}: ${data.message}`, {
+        duration: 10_000,
+        action: {
+          label: 'Xem chi tiết',
+          onClick: () => window.location.href = `/children/${data.childId}`
+        }
+      });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    });
+
     return () => {
       connection.stop();
     };
