@@ -14,6 +14,7 @@ import { Button } from '../components/ui/button';
 import { formatRelativeTime } from '../lib/formatters';
 import { cn } from '../lib/utils';
 import { Skeleton } from '../components/ui/skeleton';
+import { toast } from '../components/feedback';
 
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
@@ -30,12 +31,24 @@ export default function NotificationsPage() {
   const markAsReadMutation = useMutation({
     mutationFn: (id: number) => notificationsApi.markAsRead(id),
     onMutate: (id) => markInStore(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess: () => {
+      toast.success('Đã đánh dấu đã đọc');
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+    onError: () => {
+      toast.error('Có lỗi xảy ra');
+    },
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: () => notificationsApi.markAllAsRead(),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess: () => {
+      toast.success('Đã đọc tất cả thông báo');
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+    onError: () => {
+      toast.error('Có lỗi xảy ra');
+    },
   });
 
   const hasUnread = notifications?.some(n => !n.isRead);

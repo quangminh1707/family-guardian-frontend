@@ -29,6 +29,8 @@ import { notificationsApi } from '../../api/notifications.api';
 import { formatRelativeTime } from '../../lib/formatters';
 import { cn } from '../../lib/utils';
 import type { Notification } from '../../types/notification.types';
+import { ConfirmModal, toast } from '../feedback';
+import { ThemeToggle } from '../theme';
 
 const MAX_VISIBLE = 3;
 
@@ -57,11 +59,13 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
     mutationFn: (id: number) => notificationsApi.markAsRead(id),
     onMutate: (id) => markInStore(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: () => toast.error('Không thể cập nhật thông báo'),
   });
 
   const markAllMutation = useMutation({
     mutationFn: () => notificationsApi.markAllAsRead(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: () => toast.error('Không thể cập nhật thông báo'),
   });
 
   const unread = notifications.filter((n: Notification) => !n.isRead);
@@ -182,6 +186,7 @@ export default function Topbar() {
   const { user, logout } = useAuthStore();
   const { unreadCount } = useNotificationStore();
   const [bellOpen, setBellOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
 
   // Đóng dropdown khi click ra ngoài
@@ -210,6 +215,8 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        <ThemeToggle />
+
         {/* Bell → dropdown thông báo */}
         <div className="relative" ref={bellRef}>
           <Button
@@ -283,7 +290,10 @@ export default function Topbar() {
 
             <DropdownMenuItem 
               className="rounded-xl px-3 py-2.5 cursor-pointer gap-2.5 font-bold text-red-500 hover:text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600 transition-colors"
-              onClick={logout}
+              onSelect={(event) => {
+                event.preventDefault();
+                setShowLogoutConfirm(true);
+              }}
             >
               <LogOut className="w-4 h-4" />
               Đăng xuất
@@ -291,6 +301,19 @@ export default function Topbar() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <ConfirmModal
+        open={showLogoutConfirm}
+        title="Đăng xuất"
+        message="Bạn có chắc muốn đăng xuất không?"
+        confirmLabel="Đăng xuất"
+        variant="danger"
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          logout();
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </header>
   );
 }

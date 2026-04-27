@@ -3,7 +3,7 @@ import * as signalR from '@microsoft/signalr';
 import { useAuthStore } from '../store/authStore';
 import { useNotificationStore } from '../store/notificationStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { toast } from '../components/feedback';
 
 export function useSignalR() {
   const { accessToken, isAuthenticated } = useAuthStore();

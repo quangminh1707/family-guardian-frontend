@@ -4,7 +4,9 @@ import App from './App.tsx'
 import './index.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import { Toaster } from 'sonner'
+import { bootstrapTheme } from './components/theme'
+
+bootstrapTheme()
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,9 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <App />
-        <Toaster richColors position="top-right" expand={false} />
       </QueryClientProvider>
     </GoogleOAuthProvider>
   </React.StrictMode>,
 )
-

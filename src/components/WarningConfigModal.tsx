@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { X, Save, Trash2, ShieldCheck, Clock, Bell, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { warningConfigApi } from '../api/warningConfig.api';
+import type { WarningConfig } from '../api/warningConfig.api';
+import { ConfirmModal, toast } from './feedback';
+import type { UpsertWarningConfigPayload } from '../api/warningConfig.api';
 
 interface Props {
   childId: number;
@@ -16,6 +18,9 @@ interface Props {
 export default function WarningConfigModal({ childId, childName, websites, onClose }: Props) {
   const queryClient = useQueryClient();
   const validWebsites = websites.filter((w) => w.timeLimitMinutes && w.timeLimitMinutes > 0);
+  const [deleteTarget, setDeleteTarget] = useState<WarningConfig | null>(null);
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [pendingSavePayload, setPendingSavePayload] = useState<UpsertWarningConfigPayload | null>(null);
 
   const [selectedWebsites, setSelectedWebsites] = useState<number[]>([]);
   const [threshold1Percent, setThreshold1Percent] = useState(80);
@@ -68,6 +73,10 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
     onSuccess: () => {
       toast.success('Đã xóa cấu hình');
       queryClient.invalidateQueries({ queryKey: ['warning-configs', childId] });
+      setDeleteTarget(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Không thể xóa cấu hình');
     },
   });
 
@@ -85,27 +94,28 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
       if (!threshold2Message.trim()) return toast.error('Vui lòng nhập nội dung mốc 2');
     }
 
-    upsertMutation.mutate({
+    setPendingSavePayload({
       allowedWebsiteIds: selectedWebsites,
       threshold1Percent,
       threshold1Message,
       threshold2Percent: useThreshold2 ? threshold2Percent : null,
       threshold2Message: useThreshold2 ? threshold2Message : null,
     });
+    setShowSaveConfirm(true);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-      <div className="bg-white rounded-[2rem] w-full max-w-4xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm modal-overlay">
+      <div className="modal-container bg-white rounded-[2rem] w-full max-w-4xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 shrink-0">
+        <div className="modal-header flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center">
               <Bell className="w-5 h-5 text-orange-600" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-gray-900 uppercase">Cấu hình cảnh báo</h2>
-              <p className="text-sm font-medium text-gray-500">Cho tài khoản: {childName}</p>
+              <h2 className="title text-xl font-black text-gray-900 dark:text-white uppercase">Cấu hình cảnh báo</h2>
+              <p className="subtitle text-sm font-medium text-gray-500">Cho tài khoản: {childName}</p>
             </div>
           </div>
           <button
@@ -123,7 +133,7 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
           <div className="space-y-6">
             {/* Step 1 */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h3 className="title text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs">1</span>
                 Chọn website
               </h3>
@@ -144,11 +154,11 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
                         onClick={() => toggleWebsite(web.id)}
                         className={`cursor-pointer rounded-2xl border-2 p-3 transition-all ${
                           isSelected
-                            ? 'border-violet-600 bg-violet-50'
-                            : 'border-gray-100 bg-white hover:border-violet-200'
+                            ? 'border-violet-600 bg-violet-50 dark:bg-violet-900/20'
+                            : 'border-gray-100 bg-white hover:border-violet-200 dark:bg-slate-800 dark:border-slate-700'
                         }`}
                       >
-                        <div className="font-bold text-sm text-gray-900 truncate">{web.domain}</div>
+                        <div className="title font-bold text-sm text-gray-900 dark:text-white truncate">{web.domain}</div>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-xs font-medium text-gray-500">
                             {web.timeLimitMinutes} phút
@@ -166,14 +176,14 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
 
             {/* Step 2 */}
             <div className={`transition-opacity ${selectedWebsites.length === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h3 className="title text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs">2</span>
                 Mốc cảnh báo 1 (Bắt buộc)
               </h3>
               
-              <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100 space-y-4">
+              <div className="bg-gray-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-gray-100 dark:border-slate-700 space-y-4">
                 <div className="flex justify-between items-center font-bold">
-                  <span className="text-gray-700 text-sm">Khi thời gian dùng đạt:</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm">Khi thời gian dùng đạt:</span>
                   <span className="text-orange-600 text-lg">{threshold1Percent}%</span>
                 </div>
                 
@@ -196,8 +206,8 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
                     const used = Math.round(w.timeLimitMinutes * threshold1Percent / 100);
                     const remain = w.timeLimitMinutes - used;
                     return (
-                      <div key={id} className="flex justify-between items-center text-xs bg-white px-2 py-1.5 rounded-lg border border-gray-100">
-                        <span className="font-bold text-gray-700 truncate max-w-[120px]">{w.domain}</span>
+                      <div key={id} className="flex justify-between items-center text-xs bg-white dark:bg-slate-900 px-2 py-1.5 rounded-lg border border-gray-100 dark:border-slate-700">
+                        <span className="font-bold text-gray-700 dark:text-gray-300 truncate max-w-[120px]">{w.domain}</span>
                         <span className="text-gray-500">Đã dùng {used}p → <strong className="text-orange-600">Còn {remain}p</strong></span>
                       </div>
                     );
@@ -206,13 +216,13 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-700 uppercase">Nội dung thông báo</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Nội dung thông báo</label>
                   <textarea
                     value={threshold1Message}
                     onChange={(e) => setThreshold1Message(e.target.value)}
                     maxLength={300}
                     rows={2}
-                    className="w-full bg-white rounded-xl border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"
+                    className="input-custom w-full bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"
                     placeholder="VD: Con sắp hết giờ rồi, hãy chuẩn bị lưu bài tập nhé!"
                   />
                   <div className="text-right text-[10px] font-medium text-gray-400">{threshold1Message.length}/300</div>
@@ -223,7 +233,7 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
             {/* Step 3 */}
             <div className={`transition-opacity ${selectedWebsites.length === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                <h3 className="title text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                   <span className={`w-6 h-6 rounded-full text-white flex items-center justify-center text-xs ${useThreshold2 ? 'bg-red-500' : 'bg-gray-300'}`}>3</span>
                   Mốc cảnh báo 2 (Tuỳ chọn)
                 </h3>
@@ -236,9 +246,9 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
               </div>
 
               {useThreshold2 && (
-                <div className="bg-red-50 p-5 rounded-3xl border border-red-100 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="bg-red-50 dark:bg-red-900/10 p-5 rounded-3xl border border-red-100 dark:border-red-900/30 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="flex justify-between items-center font-bold">
-                    <span className="text-gray-700 text-sm">Khi thời gian dùng đạt:</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">Khi thời gian dùng đạt:</span>
                     <span className="text-red-600 text-lg">{threshold2Percent}%</span>
                   </div>
                   
@@ -256,13 +266,13 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
                   )}
 
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase">Nội dung thông báo mốc 2</label>
+                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Nội dung thông báo mốc 2</label>
                     <textarea
                       value={threshold2Message}
                       onChange={(e) => setThreshold2Message(e.target.value)}
                       maxLength={300}
                       rows={2}
-                      className="w-full bg-white rounded-xl border border-red-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all resize-none"
+                      className="input-custom w-full bg-white dark:bg-slate-900 rounded-xl border border-red-200 dark:border-slate-700 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all resize-none"
                       placeholder="VD: Chỉ còn vài phút nữa là hệ thống chặn, con nhanh chóng tắt đi nhé!"
                     />
                     <div className="text-right text-[10px] font-medium text-gray-400">{threshold2Message.length}/300</div>
@@ -287,8 +297,8 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
           </div>
 
           {/* Right: Existing configs */}
-          <div className="bg-gray-50 rounded-[2rem] border border-gray-100 p-6 flex flex-col h-[500px]">
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <div className="bg-gray-50 dark:bg-slate-800/30 rounded-[2rem] border border-gray-100 dark:border-slate-700 p-6 flex flex-col h-[500px]">
+            <h3 className="title text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-green-500" />
               Cấu hình đang áp dụng
             </h3>
@@ -305,8 +315,8 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
             ) : (
               <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                 {configs.map((c) => (
-                  <div key={c.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative group">
-                    <div className="font-bold text-gray-900 text-base mb-2 pr-8">{c.domain}</div>
+                  <div key={c.id} className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm relative group">
+                    <div className="title font-bold text-gray-900 dark:text-white text-base mb-2 pr-8">{c.domain}</div>
                     
                     <div className="space-y-3">
                       <div className="bg-orange-50/50 p-2.5 rounded-xl border border-orange-50">
@@ -329,11 +339,7 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
                     </div>
 
                     <button
-                      onClick={() => {
-                        if (confirm(`Bạn có chắc muốn xoá cảnh báo cho ${c.domain}?`)) {
-                          deleteMutation.mutate(c.id);
-                        }
-                      }}
+                      onClick={() => setDeleteTarget(c)}
                       className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 w-8 h-8 rounded-lg flex items-center justify-center transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -345,6 +351,41 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={showSaveConfirm}
+        title="Xác nhận lưu cấu hình"
+        message="Bạn có muốn lưu cấu hình cảnh báo này không?"
+        confirmLabel="Có, lưu"
+        cancelLabel="Không"
+        variant="default"
+        onConfirm={() => {
+          if (!pendingSavePayload) return;
+          setShowSaveConfirm(false);
+          upsertMutation.mutate(pendingSavePayload);
+        }}
+        onCancel={() => {
+          setShowSaveConfirm(false);
+          setPendingSavePayload(null);
+        }}
+      />
+
+      <ConfirmModal
+        open={Boolean(deleteTarget)}
+        title="Xóa cấu hình cảnh báo"
+        message={
+          deleteTarget
+            ? `Xóa cấu hình cảnh báo cho ${deleteTarget.domain ?? 'website này'}?`
+            : ''
+        }
+        confirmLabel="Xóa"
+        variant="warning"
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          deleteMutation.mutate(deleteTarget.id);
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

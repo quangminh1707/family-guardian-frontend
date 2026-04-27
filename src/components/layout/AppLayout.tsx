@@ -5,6 +5,8 @@ import { Menu } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { useExtensionMonitor } from '../../hooks/useExtensionMonitor';
+import { Toast } from '../feedback';
+import { ThemeToggle } from '../theme';
 
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased text-gray-900">
+      <Toast />
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col flex-shrink-0">
         <Sidebar />
@@ -35,7 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <span className="font-bold text-violet-600">Family Guardian</span>
           </div>
-          <div className="w-10" /> {/* Spacer */}
+          <ThemeToggle />
         </div>
 
         {/* Topbar (Desktop) */}

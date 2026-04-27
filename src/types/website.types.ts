@@ -24,7 +24,8 @@ export interface AddWebsiteRequest {
 }
 
 export interface UpdateWebsiteRequest {
-  timeLimitMinutes?: number;
+  domain: string;
+  timeLimitMinutes?: number | null;
   allowedStartTime?: string;
   allowedEndTime?: string;
 }

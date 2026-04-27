@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { 
@@ -9,10 +10,12 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
+import { ConfirmModal } from '../feedback';
 
 export default function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuthStore();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Tổng quan', path: '/dashboard' },
@@ -76,13 +79,26 @@ export default function Sidebar() {
           <Button 
             variant="ghost" 
             className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl"
-            onClick={logout}
+            onClick={() => setShowLogoutConfirm(true)}
           >
             <LogOut className="h-4 w-4" />
             <span className="text-sm font-medium">Đăng xuất</span>
           </Button>
         </div>
       </div>
+
+      <ConfirmModal
+        open={showLogoutConfirm}
+        title="Đăng xuất"
+        message="Bạn có chắc muốn đăng xuất không?"
+        confirmLabel="Đăng xuất"
+        variant="danger"
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          logout();
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </div>
   );
 }
