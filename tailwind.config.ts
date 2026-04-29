@@ -21,31 +21,73 @@ const config: Config = {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+          base:   'var(--border-base)',
+          subtle: 'var(--border-subtle)',
+          strong: 'var(--border-strong)',
+        },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        // Custom theme từ stitch/
-        background: '#0e0e10',
-        'surface': '#0e0e10',
-        'surface-container': '#19191c',
-        'surface-container-low': '#131315',
-        'surface-container-lowest': '#000000',
-        'surface-container-high': '#1f1f22',
-        'surface-container-highest': '#262528',
-        'surface-bright': '#2c2c2f',
-        primary: '#bd9dff',
-        'primary-dim': '#8a4cfc',
-        secondary: '#699cff',
-        tertiary: '#ffa5d9',
-        error: '#ff6e84',
-        'on-primary': '#3c0089',
-        'on-primary-fixed': '#000000',
-        'on-secondary': '#001e4a',
-        'on-surface': '#f9f5f8',
-        'on-surface-variant': '#adaaad',
-        'on-background': '#f9f5f8',
-        outline: '#767577',
-        'outline-variant': '#48474a',
+        // Custom theme từ CSS variables
+        bg: {
+          base:     'var(--bg-base)',
+          surface:  'var(--bg-surface)',
+          elevated: 'var(--bg-elevated)',
+          subtle:   'var(--bg-subtle)',
+          muted:    'var(--bg-muted)',
+        },
+        tx: {
+          primary:   'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted:     'var(--text-muted)',
+        },
+        brand: {
+          DEFAULT: 'var(--brand)',
+          hover:   'var(--brand-hover)',
+          subtle:  'var(--brand-subtle)',
+          text:    'var(--brand-text)',
+        },
+        primary: {
+          DEFAULT: 'var(--brand)',
+          foreground: 'var(--brand-text)',
+        },
+        secondary: {
+          DEFAULT: 'var(--bg-subtle)',
+          foreground: 'var(--text-primary)',
+        },
+        destructive: {
+          DEFAULT: 'var(--error)',
+          foreground: '#ffffff',
+        },
+        success: {
+          DEFAULT: 'var(--success)',
+          bg: 'var(--success-bg)',
+        },
+        warning: {
+          DEFAULT: 'var(--warning)',
+          bg: 'var(--warning-bg)',
+        },
+        error: {
+          DEFAULT: 'var(--error)',
+          bg: 'var(--error-bg)',
+        },
+        muted: {
+          DEFAULT: 'var(--bg-muted)',
+          foreground: 'var(--text-muted)',
+        },
+        accent: {
+          DEFAULT: 'var(--bg-subtle)',
+          foreground: 'var(--text-primary)',
+        },
+        popover: {
+          DEFAULT: 'var(--bg-elevated)',
+          foreground: 'var(--text-primary)',
+        },
+        card: {
+          DEFAULT: 'var(--bg-surface)',
+          foreground: 'var(--text-primary)',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

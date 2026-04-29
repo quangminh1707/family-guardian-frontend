@@ -14,7 +14,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     useExtensionMonitor();
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased text-gray-900">
+    <div className="flex h-screen bg-bg-base overflow-hidden font-sans antialiased text-tx-primary transition-colors duration-200">
       <Toast />
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col flex-shrink-0">
@@ -24,7 +24,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Mobile Header */}
-        <div className="lg:hidden h-16 border-b border-gray-100 bg-white px-4 flex items-center justify-between">
+        <div className="lg:hidden h-16 border-b border-border-base bg-bg-surface px-4 flex items-center justify-between">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-xl">

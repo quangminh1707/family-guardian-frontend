@@ -1,0 +1,39 @@
+/* ── Màu tối dễ nhìn ban đêm — nền xanh xám đậm, không thuần đen ── */
+.dark {
+  /* Background — dùng tone xanh xám ấm, không pure black */
+  --bg-base:        #0d1117;   /* nền toàn trang */
+  --bg-surface:     #161b22;   /* card, modal, panel */
+  --bg-elevated:    #1c2128;   /* dropdown, tooltip, popover */
+  --bg-subtle:      #21262d;   /* input, hover state */
+  --bg-muted:       #30363d;   /* disabled, skeleton */
+
+  /* Text */
+  --text-primary:   #e6edf3;   /* chữ chính — không pure white, dễ nhìn hơn */
+  --text-secondary: #8b949e;   /* chữ phụ */
+  --text-muted:     #484f58;   /* placeholder, disabled */
+  --text-inverse:   #0d1117;
+
+  /* Border */
+  --border-base:    #30363d;
+  --border-subtle:  #21262d;
+  --border-strong:  #484f58;
+
+  /* Brand — giữ violet nhưng sáng hơn để nổi trên nền tối */
+  --brand:          #a78bfa;
+  --brand-hover:    #c4b5fd;
+  --brand-subtle:   #1e1433;
+  --brand-text:     #a78bfa;
+
+  /* Status */
+  --success:        #3fb950;
+  --success-bg:     #0d2818;
+  --error:          #f85149;
+  --error-bg:       #2d1117;
+  --warning:        #d29922;
+  --warning-bg:     #272115;
+
+  /* Shadow — tối thì không cần shadow mạnh, dùng border thay thế */
+  --shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:      0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:      0 8px 32px rgba(0,0,0,0.5);
+}

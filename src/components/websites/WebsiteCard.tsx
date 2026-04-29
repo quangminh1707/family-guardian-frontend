@@ -85,21 +85,21 @@ export default function WebsiteCard({
 
   return (
     <>
-      <Card className="card-hover group relative overflow-hidden rounded-[2rem] border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-violet-200 hover:shadow-xl">
+      <Card className="card-hover group relative overflow-hidden rounded-[2rem] border border-border-base bg-bg-surface p-6 transition-all duration-300 hover:border-brand/40 hover:shadow-xl">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 shadow-inner transition-colors group-hover:bg-violet-50">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border-base bg-bg-subtle shadow-inner transition-colors group-hover:bg-brand-subtle">
               {website.faviconUrl ? (
                 <img src={website.faviconUrl} alt={website.domain} className="h-8 w-8 rounded-lg" />
               ) : (
-                <Globe className="h-8 w-8 text-gray-400 group-hover:text-violet-500" />
+                <Globe className="h-8 w-8 text-tx-muted group-hover:text-brand" />
               )}
             </div>
             <div>
-              <h4 className="max-w-[170px] truncate text-lg font-bold text-gray-900">
+              <h4 className="max-w-[170px] truncate text-lg font-bold text-tx-primary">
                 {website.displayName || website.domain}
               </h4>
-              <p className="mt-1 truncate text-xs font-medium text-gray-400">{website.domain}</p>
+              <p className="mt-1 truncate text-xs font-medium text-tx-muted">{website.domain}</p>
             </div>
           </div>
 
@@ -109,14 +109,14 @@ export default function WebsiteCard({
         <div className="space-y-4">
           <div className="space-y-3">
             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-              <span className="flex items-center gap-1.5 text-gray-400">
+              <span className="flex items-center gap-1.5 text-tx-muted">
                 <Clock className="h-3 w-3" />
                 Sử dụng
               </span>
-              <span className={cn('font-mono', website.limitExceeded ? 'text-red-600' : 'text-gray-700')}>
+              <span className={cn('font-mono', website.limitExceeded ? 'text-error' : 'text-tx-secondary')}>
                 {formatDuration(website.todaySeconds)}
                 {website.timeLimitMinutes && (
-                  <span className="font-normal text-gray-300">
+                  <span className="font-normal text-tx-muted/30">
                     {' '}
                     / {formatDuration(website.timeLimitMinutes * 60)}
                   </span>
@@ -128,17 +128,17 @@ export default function WebsiteCard({
               <div className="space-y-2">
                 <Progress
                   value={usagePercent || 0}
-                  className="h-2 rounded-full bg-gray-100"
+                  className="h-2 rounded-full bg-bg-muted"
                   indicatorClassName={cn(
                     'transition-all duration-500 shadow-[0_0_12px_rgba(124,58,237,0.8)]',
-                    website.limitExceeded ? 'bg-red-500 shadow-red-500/50' : 'bg-violet-600'
+                    website.limitExceeded ? 'bg-error shadow-error/50' : 'bg-brand'
                   )}
                 />
                 <div className="flex justify-end">
                   <span
                     className={cn(
                       'rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter',
-                      website.limitExceeded ? 'bg-red-100 text-red-600' : 'bg-violet-50 text-violet-600'
+                      website.limitExceeded ? 'bg-error/10 text-error' : 'bg-brand-subtle text-brand'
                     )}
                   >
                     {usagePercent}% đã dùng
@@ -149,14 +149,14 @@ export default function WebsiteCard({
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center gap-1.5 rounded-xl bg-gray-50/50 p-2 text-[10px] font-semibold text-gray-500">
-              <BarChart3 className="h-3 w-3 text-violet-400" />
+            <div className="flex items-center gap-1.5 rounded-xl bg-bg-subtle/50 p-2 text-[10px] font-semibold text-tx-secondary">
+              <BarChart3 className="h-3 w-3 text-brand/60" />
               {website.todayRequests} lần truy cập
             </div>
             <div
               className={cn(
                 'flex items-center gap-1.5 rounded-xl p-2 text-[10px] font-bold uppercase tracking-wider',
-                website.isSafe ? 'bg-green-50/60 text-green-600' : 'bg-red-50/60 text-red-500'
+                website.isSafe ? 'bg-success/10 text-success' : 'bg-error/10 text-error'
               )}
             >
               {website.isSafe ? <Shield className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
@@ -165,18 +165,18 @@ export default function WebsiteCard({
           </div>
 
           {website.allowedStartTime && (
-            <div className="flex items-center gap-2 rounded-xl border border-gray-100/70 bg-gray-50/60 p-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              <Clock className="h-3 w-3 text-violet-400" />
+            <div className="flex items-center gap-2 rounded-xl border border-border-base/70 bg-bg-subtle/60 p-2 text-[10px] font-bold uppercase tracking-wider text-tx-muted">
+              <Clock className="h-3 w-3 text-brand/60" />
               Khung giờ: {website.allowedStartTime.substring(0, 5)} - {website.allowedEndTime?.substring(0, 5)}
             </div>
           )}
         </div>
 
-        <div className="mt-6 flex items-center justify-around border-t border-gray-50 pt-6">
+        <div className="mt-6 flex items-center justify-around border-t border-border-subtle pt-6">
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 rounded-xl text-gray-400 hover:bg-violet-50 hover:text-violet-600"
+            className="h-9 w-9 rounded-xl text-tx-muted hover:bg-brand-subtle hover:text-brand"
             title="Kiểm tra lại"
             onClick={() => recheckMutation.mutate()}
           >
@@ -185,7 +185,7 @@ export default function WebsiteCard({
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 rounded-xl text-gray-400 hover:bg-amber-50 hover:text-amber-600"
+            className="h-9 w-9 rounded-xl text-tx-muted hover:bg-warning/10 hover:text-warning"
             title="Chỉnh sửa"
             onClick={openEditModal}
           >
@@ -194,7 +194,7 @@ export default function WebsiteCard({
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 rounded-xl text-gray-400 hover:bg-red-50 hover:text-red-600"
+            className="h-9 w-9 rounded-xl text-tx-muted hover:bg-error/10 hover:text-error"
             title="Xóa"
             onClick={() => setShowDeleteConfirm(true)}
           >

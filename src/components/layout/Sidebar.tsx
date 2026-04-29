@@ -24,7 +24,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white w-64 border-r border-gray-800">
+    <div className="flex flex-col h-full bg-[#0f0f13] text-white w-64 border-r border-white/5 transition-colors duration-200">
       {/* Brand */}
       <div className="p-6 flex items-center gap-3">
         <div className="bg-violet-600 p-2 rounded-xl">
@@ -43,12 +43,12 @@ export default function Sidebar() {
               "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
               location.pathname.startsWith(item.path)
                 ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20"
-                : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                : "text-white/50 hover:bg-white/10 hover:text-white"
             )}
           >
             <item.icon className={cn(
               "h-5 w-5",
-              location.pathname.startsWith(item.path) ? "text-white" : "text-gray-400 group-hover:text-white"
+              location.pathname.startsWith(item.path) ? "text-white" : "text-white/40 group-hover:text-white"
             )} />
             <span className="font-medium">{item.label}</span>
           </Link>
@@ -56,8 +56,8 @@ export default function Sidebar() {
       </nav>
 
       {/* User info */}
-      <div className="p-4 border-t border-gray-800">
-        <div className="bg-gray-800/50 rounded-2xl p-4 flex flex-col gap-4">
+      <div className="p-4 border-t border-white/5">
+        <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-4">
           <div className="flex items-center gap-3">
             {user?.avatarUrl ? (
               <img
@@ -73,7 +73,7 @@ export default function Sidebar() {
             )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{user?.fullName}</p>
-              <p className="text-[10px] text-gray-400 truncate uppercase tracking-wider">{user?.role}</p>
+              <p className="text-[10px] text-white/40 truncate uppercase tracking-wider">{user?.role}</p>
             </div>
           </div>
           <Button 

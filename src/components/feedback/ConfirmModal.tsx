@@ -35,32 +35,32 @@ export default function ConfirmModal({
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onCancel()}>
       <DialogContent
         className={cn(
-          'modal-container modal-animate z-[120] overflow-hidden rounded-[2rem] border border-gray-100 bg-white p-0 text-foreground shadow-2xl sm:max-w-sm dark:border-slate-800 dark:bg-slate-950 dark:shadow-[0_30px_80px_rgba(0,0,0,0.55)] gap-0'
+          'modal-container modal-animate z-[120] overflow-hidden rounded-[2rem] border border-border-base bg-bg-surface p-0 text-tx-primary shadow-2xl sm:max-w-sm gap-0'
         )}
       >
-        <DialogHeader className="modal-header border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-8 py-6 text-left dark:border-slate-800 dark:bg-slate-900 dark:bg-none">
+        <DialogHeader className="modal-header border-b border-border-base bg-gradient-to-r from-bg-subtle to-bg-surface px-8 py-6 text-left">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 text-gray-500 dark:bg-slate-800 dark:text-slate-300">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-subtle text-tx-muted">
               <ShieldAlert className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1 pr-8">
-              <DialogTitle className="title text-xl font-black text-gray-900 dark:text-slate-100">
+              <DialogTitle className="title text-xl font-black text-tx-primary">
                 {title}
               </DialogTitle>
-              <DialogDescription className="subtitle mt-2 text-sm leading-relaxed text-gray-500 dark:text-slate-400">
+              <DialogDescription className="subtitle mt-2 text-sm leading-relaxed text-tx-secondary">
                 {message}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="bg-white px-8 py-6 dark:bg-slate-950">
+        <div className="bg-bg-surface px-8 py-6">
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
-              className="h-11 rounded-2xl border-gray-200 px-5 font-bold text-gray-600 hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="h-11 rounded-2xl border-border-strong px-5 font-bold text-tx-secondary hover:bg-bg-subtle"
             >
               <X className="mr-2 h-4 w-4" />
               {cancelLabel}

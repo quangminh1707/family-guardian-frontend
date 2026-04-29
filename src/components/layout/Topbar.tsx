@@ -73,12 +73,12 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const hasMore = notifications.length > MAX_VISIBLE;
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+    <div className="absolute right-0 top-full mt-2 w-96 bg-bg-elevated rounded-2xl shadow-2xl border border-border-base z-50 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border-base bg-bg-elevated sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-violet-600" />
-          <span className="font-bold text-gray-900 text-sm">Thông báo</span>
+          <span className="font-bold text-tx-primary text-sm">Thông báo</span>
           {unread.length > 0 && (
             <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
               {unread.length}
@@ -98,7 +98,7 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
 
       {/* Quick Actions (Read All) */}
       {unread.length > 0 && (
-        <div className="px-5 py-2 bg-gray-50/50 flex justify-end border-b border-gray-100">
+        <div className="px-5 py-2 bg-bg-subtle/50 flex justify-end border-b border-border-base">
           <button
             onClick={() => markAllMutation.mutate()}
             disabled={markAllMutation.isPending}
@@ -111,7 +111,7 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
       )}
 
       {/* Notification list */}
-      <div className="max-h-[360px] overflow-y-auto divide-y divide-gray-50">
+      <div className="max-h-[360px] overflow-y-auto divide-y divide-border-subtle">
         {isLoading ? (
           <div className="py-8 flex flex-col items-center gap-2 text-gray-400">
             <div className="w-5 h-5 border-2 border-violet-300 border-t-violet-600 rounded-full animate-spin" />
@@ -130,8 +130,8 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
                 if (!n.isRead) markMutation.mutate(n.id);
               }}
               className={cn(
-                'w-full text-left px-5 py-4 transition-colors hover:bg-gray-50 flex gap-3 items-start group',
-                !n.isRead && 'bg-violet-50/20'
+                'w-full text-left px-5 py-4 transition-colors hover:bg-bg-subtle flex gap-3 items-start group',
+                !n.isRead && 'bg-brand-subtle/20'
               )}
             >
               {/* Icon */}
@@ -145,15 +145,15 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className={cn('text-sm font-bold leading-snug truncate', n.isRead ? 'text-gray-600' : 'text-gray-900')}>
+                  <p className={cn('text-sm font-bold leading-snug truncate', n.isRead ? 'text-tx-secondary' : 'text-tx-primary')}>
                     {n.title}
                   </p>
                   {!n.isRead && (
                     <span className="w-2 h-2 bg-red-500 rounded-full shrink-0 mt-1.5 animate-pulse" />
                   )}
                 </div>
-                <p className="text-[13px] text-gray-500 line-clamp-2 mt-1 leading-relaxed font-medium">{n.message}</p>
-                <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-wider">{formatRelativeTime(n.createdAt)}</p>
+                <p className="text-[13px] text-tx-secondary line-clamp-2 mt-1 leading-relaxed font-medium">{n.message}</p>
+                <p className="text-[10px] text-tx-muted mt-2 font-bold uppercase tracking-wider">{formatRelativeTime(n.createdAt)}</p>
               </div>
             </button>
           ))
@@ -162,10 +162,10 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
 
       {/* Footer (Expand / Collapse) */}
       {hasMore && (
-        <div className="border-t border-gray-100 bg-gray-50/30">
+        <div className="border-t border-border-base bg-bg-subtle/30">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full py-3 text-xs font-bold text-violet-600 hover:bg-violet-50 transition-colors flex items-center justify-center gap-1.5"
+            className="w-full py-3 text-xs font-bold text-brand hover:bg-brand-subtle transition-colors flex items-center justify-center gap-1.5"
           >
             {expanded ? (
               <><ChevronUp className="w-4 h-4" /> Rút gọn danh sách</>
@@ -175,9 +175,6 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
           </button>
         </div>
       )}
-
-      {/* Footer link */}
-     
     </div>
   );
 }
@@ -202,14 +199,14 @@ export default function Topbar() {
   }, [bellOpen]);
 
   return (
-    <header className="h-16 border-b border-gray-100 bg-white px-8 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-16 border-b border-border-base bg-bg-surface px-8 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-4 flex-1">
         <div className="relative w-full max-w-md group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-violet-500 transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-tx-muted group-focus-within:text-brand transition-colors" />
           <input 
             type="text" 
             placeholder="Tìm kiếm..." 
-            className="w-full bg-gray-50 border-none rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-violet-500/20 focus:bg-white transition-all outline-none"
+            className="w-full bg-bg-subtle border border-border-subtle rounded-xl py-2 pl-10 pr-4 text-sm text-tx-primary placeholder:text-tx-muted focus:ring-2 focus:ring-brand/20 focus:bg-bg-surface transition-all outline-none"
           />
         </div>
       </div>
@@ -223,12 +220,12 @@ export default function Topbar() {
             variant="ghost"
             size="icon"
             id="bell-btn"
-            className="relative text-gray-500 hover:text-violet-600 hover:bg-violet-50 rounded-xl transition-colors"
+            className="relative text-tx-secondary hover:text-brand hover:bg-brand-subtle rounded-xl transition-colors"
             onClick={() => setBellOpen((prev) => !prev)}
           >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white animate-pulse">
+              <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-bg-surface animate-pulse">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -239,19 +236,19 @@ export default function Topbar() {
           )}
         </div>
 
-        <div className="w-[1px] h-6 bg-gray-200" />
+        <div className="w-[1px] h-6 bg-border-base" />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex items-center gap-3 pl-2 pr-3 py-1 hover:bg-violet-50 rounded-xl transition-colors h-auto"
+              className="flex items-center gap-3 pl-2 pr-3 py-1 hover:bg-brand-subtle rounded-xl transition-colors h-auto"
             >
               {user?.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
                   alt={user.fullName}
-                  className="w-8 h-8 rounded-full object-cover ring-2 ring-violet-200"
+                  className="w-8 h-8 rounded-full object-cover ring-2 ring-brand/20"
                   referrerPolicy="no-referrer"
                 />
               ) : (
@@ -260,28 +257,28 @@ export default function Topbar() {
                 </div>
               )}
               <div className="flex flex-col items-start">
-                <span className="text-sm font-bold text-gray-900 leading-none">{user?.fullName}</span>
-                <span className="text-[10px] font-semibold text-violet-500 mt-1 uppercase tracking-wide">Guardian</span>
+                <span className="text-sm font-bold text-tx-primary leading-none">{user?.fullName}</span>
+                <span className="text-[10px] font-semibold text-brand mt-1 uppercase tracking-wide">Guardian</span>
               </div>
-              <ChevronDown className="h-4 w-4 text-gray-500" />
+              <ChevronDown className="h-4 w-4 text-tx-secondary" />
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-60 rounded-2xl p-2 shadow-xl border border-gray-100 bg-white">
+          <DropdownMenuContent align="end" className="w-60 rounded-2xl p-2 shadow-xl border border-border-base bg-bg-elevated">
             {/* Email header */}
             <div className="px-3 py-2.5">
-              <p className="text-xs font-bold text-gray-900 truncate">{user?.fullName}</p>
-              <p className="text-[11px] text-gray-500 truncate mt-0.5">{user?.email}</p>
+              <p className="text-xs font-bold text-tx-primary truncate">{user?.fullName}</p>
+              <p className="text-[11px] text-tx-secondary truncate mt-0.5">{user?.email}</p>
             </div>
 
             <DropdownMenuSeparator className="my-1" />
 
-            <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer gap-2.5 font-semibold text-gray-800 hover:text-violet-700 hover:bg-violet-50 focus:bg-violet-50 focus:text-violet-700 transition-colors">
+            <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer gap-2.5 font-semibold text-tx-primary hover:text-brand hover:bg-brand-subtle focus:bg-brand-subtle focus:text-brand transition-colors">
               <User className="w-4 h-4" />
               Thông tin cá nhân
             </DropdownMenuItem>
 
-            <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer gap-2.5 font-semibold text-gray-800 hover:text-violet-700 hover:bg-violet-50 focus:bg-violet-50 focus:text-violet-700 transition-colors">
+            <DropdownMenuItem className="rounded-xl px-3 py-2.5 cursor-pointer gap-2.5 font-semibold text-tx-primary hover:text-brand hover:bg-brand-subtle focus:bg-brand-subtle focus:text-brand transition-colors">
               <Settings className="w-4 h-4" />
               Cài đặt
             </DropdownMenuItem>

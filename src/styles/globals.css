@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import './themes/index.css';
+@plugin "tailwindcss-animate";
+
+@theme {
+  /* Border */
+  --color-border-base: var(--border-base);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+
+  /* Background */
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-muted: var(--bg-muted);
+
+  /* Text */
+  --color-tx-primary: var(--text-primary);
+  --color-tx-secondary: var(--text-secondary);
+  --color-tx-muted: var(--text-muted);
+
+  /* Brand */
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-subtle: var(--brand-subtle);
+  --color-brand-text: var(--brand-text);
+
+  /* Semantic mappings for shadcn/ui */
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--brand-text);
+  
+  --color-secondary: var(--bg-subtle);
+  --color-secondary-foreground: var(--text-primary);
+
+  --color-destructive: var(--error);
+  --color-destructive-foreground: #ffffff;
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+
+  --color-muted: var(--bg-muted);
+  --color-muted-foreground: var(--text-muted);
+
+  --color-accent: var(--bg-subtle);
+  --color-accent-foreground: var(--text-primary);
+
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-primary);
+
+  --color-card: var(--bg-surface);
+  --color-card-foreground: var(--text-primary);
+
+  /* Border Radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-base text-tx-primary transition-colors duration-200;
+  }
+}
+
+.dark ::-webkit-scrollbar { width: 6px; }
+.dark ::-webkit-scrollbar-track { background: var(--bg-subtle); }
+.dark ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }

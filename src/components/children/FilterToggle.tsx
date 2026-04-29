@@ -56,17 +56,17 @@ export function FilterToggle({ childId, initialEnabled, onToggle }: FilterToggle
 
   return (
     <>
-      <div className="filter-card flex items-center gap-5 rounded-[2rem] border border-blue-100 bg-gradient-to-br from-white to-blue-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 dark:shadow-[0_18px_40px_rgba(0,0,0,0.35)] dark:hover:border-slate-700 dark:hover:shadow-[0_22px_50px_rgba(0,0,0,0.45)]">
-        <div className="toggle-wrapper flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 ring-1 ring-blue-100 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800">
+      <div className="filter-card flex items-center gap-5 rounded-[2rem] border border-border-base bg-gradient-to-br from-bg-surface to-bg-subtle/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md transition-colors">
+        <div className="toggle-wrapper flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand/10 text-brand ring-1 ring-border-subtle">
           <span className="text-xl">🛡️</span>
         </div>
 
         <div className="flex-1">
           <div className="mb-0.5 flex items-center gap-2">
-            <span className="text-sm font-black uppercase tracking-tight text-gray-900 dark:text-slate-100">Bộ lọc web</span>
-            {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-500 dark:text-sky-300" />}
+            <span className="text-sm font-black uppercase tracking-tight text-tx-primary">Bộ lọc web</span>
+            {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-brand" />}
           </div>
-          <p className="text-[11px] font-medium leading-relaxed text-gray-500 dark:text-slate-400">
+          <p className="text-[11px] font-medium leading-relaxed text-tx-secondary">
             Bảo vệ trẻ em bằng cách chỉ truy cập các website an toàn
           </p>
         </div>
@@ -80,7 +80,7 @@ export function FilterToggle({ childId, initialEnabled, onToggle }: FilterToggle
           <span
             className={cn(
               'text-[9px] font-black uppercase tracking-widest',
-              enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-slate-500'
+              enabled ? 'text-success' : 'text-tx-muted'
             )}
           >
             {enabled ? 'Bật' : 'Tắt'}
