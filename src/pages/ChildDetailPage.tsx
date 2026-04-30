@@ -243,6 +243,7 @@ export default function ChildDetailPage() {
         <WarningConfigModal
           childId={id}
           childName={child.fullName}
+          defaultTab="warning"
           websites={websites?.map((w: any) => ({
             id: w.id,
             domain: w.domain,

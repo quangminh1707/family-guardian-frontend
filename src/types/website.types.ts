@@ -18,16 +18,17 @@ export interface AllowedWebsite {
 
 export interface AddWebsiteRequest {
   domain: string;
-  timeLimitMinutes?: number;
-  allowedStartTime?: string;
-  allowedEndTime?: string;
+  timeLimitMinutes?: number | null;
+  allowedStartTime?: string | null;
+  allowedEndTime?: string | null;
 }
 
 export interface UpdateWebsiteRequest {
-  domain: string;
+  domain?: string;
   timeLimitMinutes?: number | null;
-  allowedStartTime?: string;
-  allowedEndTime?: string;
+  allowedStartTime?: string | null;
+  allowedEndTime?: string | null;
+  isActive?: boolean;
 }
 
 export interface WebsiteCheckResult {
