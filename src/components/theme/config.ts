@@ -20,12 +20,12 @@ export const THEME_TOGGLE_THEME: Record<AppTheme, ThemeToggleTheme> = {
       bg-white text-slate-700 
       shadow-sm 
       transition-all duration-200
-
       hover:bg-slate-100 
       hover:text-slate-900 
       hover:shadow-md 
       hover:-translate-y-[1px]
       shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]
+      
       dark:border-slate-700 
       dark:bg-slate-900 
       dark:text-slate-100 

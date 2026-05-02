@@ -75,14 +75,14 @@ export default function NotificationsPage() {
       {/* Header Section */}
       <div className="flex items-center justify-between">
          <div className="space-y-1">
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">Thông báo</h2>
+            <h2 className="text-3xl font-black text-tx-primary tracking-tight uppercase">Thông báo</h2>
             <p className="text-gray-500 font-medium">Theo dõi các hoạt động và cảnh báo quan trọng từ hệ thống.</p>
          </div>
          <Button 
             variant="outline" 
             onClick={() => markAllAsReadMutation.mutate()}
             disabled={!hasUnread || markAllAsReadMutation.isPending}
-            className="rounded-2xl h-12 border-gray-100 font-bold uppercase tracking-widest text-[10px] gap-2 disabled:opacity-40"
+            className="rounded-2xl h-12 border-border-base font-bold uppercase tracking-widest text-[10px] gap-2 disabled:opacity-40"
           >
             <CheckCircle2 className="w-4 h-4" />
             Đánh dấu tất cả đã đọc
@@ -99,30 +99,31 @@ export default function NotificationsPage() {
             <div 
               key={n.id} 
               className={cn(
-                "group relative bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.01] border-l-4",
+                "group relative bg-white rounded-[2rem] p-6 border border-border-base shadow-sm transition-all duration-300 hover:shadow-xl hover:scale-[1.01] border-l-4",
                 getBorderColor(n.type),
-                !n.isRead && "bg-violet-50/10 border-violet-100"
+                !n.isRead ? "bg-brand-subtle/30 border-brand/20 "// chưa đọc
+                : "bg-bg-surface/60 "//phần này cho đã đọc
               )}
             >
                <div className="flex gap-6">
                   <div className={cn(
                     "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner",
-                    n.type === 'warning' ? 'bg-red-50' : n.type === 'info' ? 'bg-blue-50' : 'bg-violet-50'
+                    n.type === 'warning' ? 'bg-error-bg' : n.type === 'info' ? 'bg-bg-subtle' : 'bg-brand-subtle'
                   )}>
                     {getIcon(n.type)}
                   </div>
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between mb-1">
-                       <h3 className={cn("text-lg font-bold tracking-tight", n.isRead ? "text-gray-700" : "text-gray-900")}>
+                       <h3 className={cn("text-lg font-bold tracking-tight", n.isRead ? "text-tx-secondary" : "text-tx-primary")}>
                          {n.title}
                        </h3>
-                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                       <span className="text-[10px] font-bold text-tx-muted uppercase tracking-widest flex items-center gap-1.5">
                          <Clock className="w-3 h-3" />
                          {formatRelativeTime(n.createdAt)}
                          
                        </span>
                     </div>
-                    <p className={cn("text-sm leading-relaxed", n.isRead ? "text-gray-400" : "text-gray-500")}>
+                    <p className={cn("text-sm leading-relaxed", n.isRead ? "text-tx-muted" : "text-gray-500")}>
                       {n.message}
                     </p>
                     
@@ -136,7 +137,7 @@ export default function NotificationsPage() {
                             Đánh dấu đã đọc
                          </Button>
                        )}
-                       <Button variant="ghost" size="sm" className="rounded-xl h-8 w-8 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50">
+                       <Button variant="ghost" size="sm" className="rounded-xl h-8 w-8 p-0 text-tx-muted hover:text-red-500 hover:bg-error-bg">
                           <Trash2 className="w-4 h-4" />
                        </Button>
                     </div>
@@ -150,12 +151,12 @@ export default function NotificationsPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-[3rem] p-24 text-center border border-dashed border-gray-200">
-           <div className="w-20 h-20 bg-gray-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
-              <Inbox className="w-10 h-10 text-gray-300" />
+        <div className="bg-bg-surface rounded-[3rem] p-24 text-center border border-dashed border-border-subtle">
+           <div className="w-20 h-20 bg-bg-subtle rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
+              <Inbox className="w-10 h-10 text-tx-muted" />
            </div>
-           <h3 className="text-xl font-bold text-gray-900">Hộp thư trống</h3>
-           <p className="text-gray-500 mt-3 max-w-xs mx-auto text-sm leading-relaxed">
+           <h3 className="text-xl font-bold text-tx-primary">Hộp thư trống</h3>
+           <p className="text-tx-secondary mt-3 max-w-xs mx-auto text-sm leading-relaxed">
              Bạn không có thông báo nào vào lúc này. Mọi thứ đều đang diễn ra tốt đẹp!
            </p>
         </div>

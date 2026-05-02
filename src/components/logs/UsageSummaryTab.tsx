@@ -30,7 +30,7 @@ export function UsageSummaryTab({ childId }: Props) {
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               days === d
                 ? 'bg-violet-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-bg-subtle text-tx-secondary hover:bg-bg-muted'
             }`}
           >
             {d} ngày
@@ -39,13 +39,13 @@ export function UsageSummaryTab({ childId }: Props) {
       </div>
 
       {/* ── Chart: Tổng thời gian theo domain (Horizontal Bar) ── */}
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+      <div className="bg-bg-surface rounded-[2.5rem] border border-border-base shadow-sm p-8">
+        <h3 className="text-xl font-bold text-tx-primary mb-6 flex items-center gap-2">
           <span>⏱️</span> Thời gian theo website ({days} ngày)
         </h3>
 
         {data?.byDomain.length === 0 ? (
-          <p className="text-gray-400 text-sm text-center py-12 font-medium">Chưa có dữ liệu</p>
+          <p className="text-tx-muted text-sm text-center py-12 font-medium">Chưa có dữ liệu</p>
         ) : (
           <div style={{ height: Math.max(300, (data?.byDomain.length ?? 0) * 60) }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -65,30 +65,32 @@ export function UsageSummaryTab({ childId }: Props) {
                 <XAxis
                     type="number"
                     tickFormatter={(v) => formatDuration(v)}
-                    tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 600 }}
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)', fontWeight: 600 }}
                     axisLine={false}
                     tickLine={false}
                 />
                 <YAxis
                     type="category"
                     dataKey="name"
-                    tick={{ fontSize: 12, fill: '#374151', fontWeight: 700 }}
+                    tick={{ fontSize: 12, fill: 'var(--text-primary)', fontWeight: 700 }}
                     width={120}
                     axisLine={false}
                     tickLine={false}
                 />
                 <Tooltip
-                    cursor={{ fill: '#f9fafb' }}
+                    cursor={{ fill: 'var(--bg-subtle)' }}
                     formatter={(value: any, _: any, props: any) => [
                     formatDuration(Number(value)),
                     props.payload.overLimit ? '⚠️ Vượt giới hạn' : '✅ Bình thường',
                     ]}
                     contentStyle={{
+                      color: 'var(--text-muted)',
+                      
                     borderRadius: '20px',
                     border: 'none',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+                    boxShadow: 'var(--shadow-md)',
                     padding: '12px 16px',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
                     }}
                 />
                 <Bar dataKey="totalSeconds" radius={[0, 10, 10, 0]} barSize={24}>
@@ -111,8 +113,8 @@ export function UsageSummaryTab({ childId }: Props) {
       </div>
 
       {/* ── Chart: Tổng thời gian theo ngày (Line Chart) ── */}
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+      <div className="bg-bg-surface rounded-[2.5rem] border border-border-base shadow-sm p-8">
+        <h3 className="text-xl font-bold text-tx-primary mb-6 flex items-center gap-2">
           <span>📅</span> Hoạt động theo ngày
         </h3>
         <div className="h-[250px]">
@@ -121,17 +123,17 @@ export function UsageSummaryTab({ childId }: Props) {
                 date: new Date(d.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
                 hours: Math.round(d.totalSeconds / 360) / 10, // 1 decimal
             }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 600 }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" vertical={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontWeight: 600 }} axisLine={false} tickLine={false} />
                 <YAxis
                 tickFormatter={(v) => `${v}h`}
-                tick={{ fontSize: 11, fill: '#9ca3af', fontWeight: 600 }}
+                tick={{ fontSize: 11, fill: 'var(--text-muted)', fontWeight: 600 }}
                 axisLine={false}
                 tickLine={false}
                 />
                 <Tooltip
                 formatter={(v: any) => [`${v} giờ`, 'Tổng thời gian']}
-                contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', padding: '12px 16px', fontWeight: 'bold' }}
+                contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: 'var(--shadow-md)',color: 'var(--text-muted)', padding: '12px 16px', fontWeight: 'bold' }}
                 />
                 <Line
                 type="monotone"
@@ -147,49 +149,49 @@ export function UsageSummaryTab({ childId }: Props) {
       </div>
 
       {/* ── Bảng chi tiết theo domain ── */}
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-        <div className="px-8 py-6 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 uppercase tracking-widest text-[13px]">📊 Chi tiết theo website</h3>
+      <div className="bg-bg-surface rounded-[2.5rem] border border-border-base shadow-sm overflow-hidden">
+        <div className="px-8 py-6 border-b border-border-base">
+          <h3 className="text-lg font-bold text-tx-primary uppercase tracking-widest text-[13px]">📊 Chi tiết theo website</h3>
         </div>
         <div className="overflow-x-auto">
             <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-bg-subtle">
                 <tr>
-                <th className="text-left px-8 py-4 text-gray-400 font-bold uppercase tracking-widest text-[10px]">Website</th>
-                <th className="text-right px-8 py-4 text-gray-400 font-bold uppercase tracking-widest text-[10px]">Tổng thời gian</th>
-                <th className="text-right px-8 py-4 text-gray-400 font-bold uppercase tracking-widest text-[10px]">Giới hạn/ngày</th>
-                <th className="text-right px-8 py-4 text-gray-400 font-bold uppercase tracking-widest text-[10px]">Lượt truy cập</th>
+                <th className="text-left px-8 py-4 text-tx-muted font-bold uppercase tracking-widest text-[10px]">Website</th>
+                <th className="text-right px-8 py-4 text-tx-muted font-bold uppercase tracking-widest text-[10px]">Tổng thời gian</th>
+                <th className="text-right px-8 py-4 text-tx-muted font-bold uppercase tracking-widest text-[10px]">Giới hạn/ngày</th>
+                <th className="text-right px-8 py-4 text-tx-muted font-bold uppercase tracking-widest text-[10px]">Lượt truy cập</th>
                 </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border-subtle">
                 {data?.byDomain.map((d) => (
-                <tr key={d.domain} className="hover:bg-gray-50/50 transition-colors group">
+                <tr key={d.domain} className="hover:bg-bg-subtle/50 transition-colors group">
                     <td className="px-8 py-4">
                     <div className="flex items-center gap-3">
                         {d.faviconUrl ? (
-                        <img src={d.faviconUrl} alt="" className="w-8 h-8 rounded-xl shadow-sm bg-white" />
+                        <img src={d.faviconUrl} alt="" className="w-8 h-8 rounded-xl shadow-sm bg-bg-surface" />
                         ) : (
                             <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center text-violet-400 text-xs font-bold uppercase">
                                 {d.domain.charAt(0)}
                             </div>
                         )}
                         <div>
-                        <div className="font-bold text-gray-900">
+                        <div className="font-bold text-tx-primary">
                             {d.displayName || d.domain}
                         </div>
-                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{d.domain}</div>
+                        <div className="text-[10px] text-tx-muted font-bold uppercase tracking-tighter">{d.domain}</div>
                         </div>
                     </div>
                     </td>
-                    <td className="px-8 py-4 text-right font-black text-gray-700 font-mono">
+                    <td className="px-8 py-4 text-right font-black text-tx-primary font-mono">
                     {formatDuration(d.totalSeconds)}
                     </td>
-                    <td className="px-8 py-4 text-right text-gray-500 font-bold text-xs">
+                    <td className="px-8 py-4 text-right text-tx-secondary font-bold text-xs">
                     {d.timeLimitMinutes
                         ? `${d.timeLimitMinutes} phút/ngày`
                         : <span className="text-gray-300 font-normal">—</span>}
                     </td>
-                    <td className="px-8 py-4 text-right text-gray-500 font-black font-mono">
+                    <td className="px-8 py-4 text-right text-tx-secondary font-black font-mono">
                     {d.totalRequests.toLocaleString()}
                     </td>
                 </tr>
@@ -206,10 +208,10 @@ function UsageSkeleton() {
   return (
     <div className="space-y-6 p-4">
       <div className="flex gap-2">
-        {[1, 2, 3].map(i => <div key={i} className="h-9 w-20 bg-gray-100 rounded-full animate-pulse" />)}
+        {[1, 2, 3].map(i => <div key={i} className="h-9 w-20 bg-bg-subtle rounded-full animate-pulse" />)}
       </div>
       {[300, 250, 400].map((h, i) => (
-        <div key={i} className="bg-gray-50 rounded-[2.5rem] animate-pulse" style={{ height: h }} />
+        <div key={i} className="bg-bg-subtle rounded-[2.5rem] animate-pulse" style={{ height: h }} />
       ))}
     </div>
   );
