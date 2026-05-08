@@ -6,22 +6,637 @@ import { Badge } from './ui/badge';
 import { warningConfigApi } from '../api/warningConfig.api';
 import type { WarningConfig } from '../api/warningConfig.api';
 import { websitesApi } from '../api/websites.api';
-import { timeWindowWarningConfigApi, type TimeWindowWarningConfig } from '../api/timeWindowWarningConfig.api';
+import {
+  timeWindowWarningConfigApi,
+  type TimeWindowWarningConfig,
+  type UpsertTimeWindowWarningConfigPayload,
+} from '../api/timeWindowWarningConfig.api';
 import { ConfirmModal, toast } from './feedback';
+import { formatTimeRange } from '../lib/formatters';
 import type { UpsertWarningConfigPayload } from '../api/warningConfig.api';
+import type { AllowedWebsite } from '../types/website.types';
 
 interface Props {
   childId: number;
   childName: string;
-  websites: {
-    id: number;
-    domain: string;
-    timeLimitMinutes?: number | null;
-    allowedStartTime?: string | null;
-    allowedEndTime?: string | null;
-  }[];
+  websites: AllowedWebsite[];
   onClose: () => void;
   defaultTab?: 'warning' | 'timewindow';
+}
+
+function RefactoredTimeWindowTab({ childId, websites, onClose }: Props) {
+  const queryClient = useQueryClient();
+  const eligibleWebsites = websites.filter((website) => website.timeLimitMinutes == null);
+
+  const [selectedWebsiteId, setSelectedWebsiteId] = useState<number | null>(null);
+  const [warnMode, setWarnMode] = useState<'minutes_before' | 'at_time'>('minutes_before');
+
+  const [warnMinutesBefore1, setWarnMinutesBefore1] = useState(10);
+  const [warnMessage1, setWarnMessage1] = useState('');
+  const [showWarning2, setShowWarning2] = useState(false);
+  const [warnMinutesBefore2, setWarnMinutesBefore2] = useState(5);
+  const [warnMessage2, setWarnMessage2] = useState('');
+
+  const [warnAtTime1, setWarnAtTime1] = useState('');
+  const [warnAtTimeMessage1, setWarnAtTimeMessage1] = useState('');
+  const [warnAtTime2, setWarnAtTime2] = useState('');
+  const [warnAtTimeMessage2, setWarnAtTimeMessage2] = useState('');
+
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<TimeWindowWarningConfig | null>(null);
+
+  const { data: twConfigs, isLoading } = useQuery({
+    queryKey: ['tw-warning-configs', childId],
+    queryFn: () => timeWindowWarningConfigApi.getByChild(childId).then((response) => response.data),
+  });
+
+  const selectedWebsite = selectedWebsiteId
+    ? websites.find((website) => website.id === selectedWebsiteId) ?? null
+    : null;
+  const selectedWebsiteHasWindow = Boolean(selectedWebsite?.allowedStartTime && selectedWebsite?.allowedEndTime);
+
+  useEffect(() => {
+    if (!selectedWebsiteId) {
+      setWarnMode('minutes_before');
+      setWarnMinutesBefore1(10);
+      setWarnMessage1('');
+      setShowWarning2(false);
+      setWarnMinutesBefore2(5);
+      setWarnMessage2('');
+      setWarnAtTime1('');
+      setWarnAtTimeMessage1('');
+      setWarnAtTime2('');
+      setWarnAtTimeMessage2('');
+      return;
+    }
+
+    const existingTw = twConfigs?.find((config) => config.allowedWebsiteId === selectedWebsiteId);
+
+    if (existingTw?.warnMode === 'at_time') {
+      setWarnMode('at_time');
+      setWarnAtTime1(existingTw.warnAtTime1 ?? '');
+      setWarnAtTimeMessage1(existingTw.message1 ?? '');
+      setShowWarning2(existingTw.warnAtTime2 != null || existingTw.warnMinutesBefore2 != null);
+      setWarnAtTime2(existingTw.warnAtTime2 ?? '');
+      setWarnAtTimeMessage2(existingTw.message2 ?? '');
+
+      setWarnMinutesBefore1(10);
+      setWarnMessage1('');
+      setWarnMinutesBefore2(5);
+      setWarnMessage2('');
+      return;
+    }
+
+    if (existingTw) {
+      setWarnMode('minutes_before');
+      setWarnMinutesBefore1(existingTw.warnMinutesBefore1 ?? 10);
+      setWarnMessage1(existingTw.message1 ?? '');
+      setShowWarning2(existingTw.warnMinutesBefore2 != null || existingTw.warnAtTime2 != null);
+      setWarnMinutesBefore2(existingTw.warnMinutesBefore2 ?? 5);
+      setWarnMessage2(existingTw.message2 ?? '');
+
+      setWarnAtTime1('');
+      setWarnAtTimeMessage1('');
+      setWarnAtTime2('');
+      setWarnAtTimeMessage2('');
+      return;
+    }
+
+    setWarnMode('minutes_before');
+    setWarnMinutesBefore1(10);
+    setWarnMessage1('');
+    setShowWarning2(false);
+    setWarnMinutesBefore2(5);
+    setWarnMessage2('');
+    setWarnAtTime1('');
+    setWarnAtTimeMessage1('');
+    setWarnAtTime2('');
+    setWarnAtTimeMessage2('');
+  }, [selectedWebsiteId, twConfigs]);
+
+  const upsertTwMutation = useMutation({
+    mutationFn: timeWindowWarningConfigApi.upsert,
+    onSuccess: () => {
+      toast.success('Đã lưu cấu hình cảnh báo khung giờ!');
+      queryClient.invalidateQueries({ queryKey: ['tw-warning-configs', childId] });
+      // Keep modal open as requested
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Không thể lưu cấu hình');
+    },
+  });
+
+  const deleteTwMutation = useMutation({
+    mutationFn: timeWindowWarningConfigApi.delete,
+    onSuccess: () => {
+      toast.success('Đã xoá cấu hình cảnh báo khung giờ');
+      queryClient.invalidateQueries({ queryKey: ['tw-warning-configs', childId] });
+      setDeleteTarget(null);
+    },
+    onError: () => toast.error('Không thể xoá cấu hình'),
+  });
+
+  const handleSave = () => {
+    if (!selectedWebsiteId) return toast.error('Vui lòng chọn website');
+    if (!selectedWebsite || !selectedWebsite.allowedStartTime || !selectedWebsite.allowedEndTime) {
+      return toast.error('Website này chưa có khung giờ cho phép');
+    }
+
+    if (warnMode === 'minutes_before') {
+      const windowDuration = timeToMinutes(selectedWebsite.allowedEndTime) - timeToMinutes(selectedWebsite.allowedStartTime);
+      if (warnMinutesBefore1 <= 0) return toast.error('Mốc 1 phải lớn hơn 0 phút');
+      if (warnMinutesBefore1 >= windowDuration) return toast.error('Mốc 1 phải nhỏ hơn độ dài khung giờ');
+      if (!warnMessage1.trim()) return toast.error('Vui lòng nhập nội dung cảnh báo mốc 1');
+
+      if (showWarning2) {
+        if (warnMinutesBefore2 <= 0) return toast.error('Mốc 2 phải lớn hơn 0 phút');
+        if (warnMinutesBefore2 >= warnMinutesBefore1) return toast.error('Mốc 2 phải nhỏ hơn mốc 1');
+        if (warnMinutesBefore2 >= windowDuration) return toast.error('Mốc 2 phải nhỏ hơn độ dài khung giờ');
+        if (!warnMessage2.trim()) return toast.error('Vui lòng nhập nội dung cảnh báo mốc 2');
+      }
+    } else {
+      const allowedStart = selectedWebsite.allowedStartTime;
+      const allowedEnd = selectedWebsite.allowedEndTime;
+
+      if (!warnAtTime1.trim()) return toast.error('Vui lòng chọn giờ cảnh báo mốc 1');
+      if (!warnAtTimeMessage1.trim()) return toast.error('Vui lòng nhập nội dung cảnh báo mốc 1');
+      if (!isTimeWithinRange(warnAtTime1, allowedStart, allowedEnd)) {
+        return toast.error('Giờ cảnh báo mốc 1 phải nằm trong khung giờ cho phép');
+      }
+
+      if (showWarning2) {
+        if (!warnAtTime2.trim()) return toast.error('Vui lòng chọn giờ cảnh báo mốc 2');
+        if (!warnAtTimeMessage2.trim()) return toast.error('Vui lòng nhập nội dung cảnh báo mốc 2');
+        if (!isTimeWithinRange(warnAtTime2, allowedStart, allowedEnd)) {
+          return toast.error('Giờ cảnh báo mốc 2 phải nằm trong khung giờ cho phép');
+        }
+        if (timeToMinutes(warnAtTime2) <= timeToMinutes(warnAtTime1)) {
+          return toast.error('Mốc 2 phải sau mốc 1');
+        }
+      }
+    }
+
+    setShowSaveConfirm(true);
+  };
+
+  const executeSave = async () => {
+    if (!selectedWebsiteId) return;
+    setShowSaveConfirm(false);
+
+    const payload: UpsertTimeWindowWarningConfigPayload =
+      warnMode === 'minutes_before'
+        ? {
+            allowedWebsiteId: selectedWebsiteId,
+            warnMode,
+            warnMinutesBefore1,
+            message1: warnMessage1.trim(),
+            warnMinutesBefore2: showWarning2 ? warnMinutesBefore2 : undefined,
+            message2: showWarning2 ? warnMessage2.trim() : undefined,
+            warnAtTime1: null,
+            warnAtTimeMessage1: null,
+            warnAtTime2: null,
+            warnAtTimeMessage2: null,
+            isActive: true,
+          }
+        : {
+            allowedWebsiteId: selectedWebsiteId,
+            warnMode,
+            warnMinutesBefore1: null,
+            message1: null,
+            warnMinutesBefore2: null,
+            message2: null,
+            warnAtTime1: warnAtTime1.trim() || undefined,
+            warnAtTimeMessage1: warnAtTimeMessage1.trim(),
+            warnAtTime2: showWarning2 ? warnAtTime2.trim() || undefined : undefined,
+            warnAtTimeMessage2: showWarning2 ? warnAtTimeMessage2.trim() : undefined,
+            isActive: true,
+          };
+
+    await upsertTwMutation.mutateAsync(payload);
+  };
+
+  const selectedWebsiteWindowText = selectedWebsite?.allowedStartTime && selectedWebsite?.allowedEndTime
+    ? formatTimeRange(selectedWebsite.allowedStartTime, selectedWebsite.allowedEndTime)
+    : 'Không có khung giờ';
+
+  return (
+    <>
+      <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div>
+            <h3 className="title text-sm font-bold text-tx-primary uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-brand text-white flex items-center justify-center text-xs">1</span>
+              Chọn website
+            </h3>
+
+            {eligibleWebsites.length === 0 ? (
+              <div className="bg-warning-bg text-warning p-4 rounded-2xl text-sm font-medium border border-warning/10 flex gap-2 items-start">
+                <AlertTriangle className="w-5 h-5 shrink-0" />
+                Tất cả website đang dùng giới hạn phút. Hãy chuyển website sang khung giờ trước khi tạo cảnh báo.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {eligibleWebsites.map((web) => {
+                  const isSelected = selectedWebsiteId === web.id;
+                  const hasConfig = twConfigs?.some((config) => config.allowedWebsiteId === web.id);
+
+                  return (
+                    <button
+                      key={web.id}
+                      type="button"
+                      onClick={() => setSelectedWebsiteId(web.id)}
+                      className={`cursor-pointer rounded-2xl border-2 p-3 text-left transition-all ${
+                        isSelected
+                          ? 'border-brand bg-brand-subtle'
+                          : 'border-border-base bg-bg-surface hover:border-brand/40'
+                      }`}
+                    >
+                      <div className="title font-bold text-sm text-tx-primary truncate">{web.domain}</div>
+                      <div className="mt-2 space-y-1">
+                        <span className="block text-xs text-tx-secondary">
+                          {web.allowedStartTime && web.allowedEndTime
+                            ? formatTimeRange(web.allowedStartTime, web.allowedEndTime)
+                            : 'Không có khung giờ'}
+                        </span>
+                        {hasConfig && (
+                          <Badge className="bg-success-bg text-success hover:bg-success-bg text-[10px] px-1.5 py-0">
+                            ● Đã có cấu hình
+                          </Badge>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+            <h3 className="title text-sm font-bold text-tx-primary uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-warning text-white flex items-center justify-center text-xs">2</span>
+              MỐC CẢNH BÁO 1 (BẮT BUỘC)
+            </h3>
+
+            <div className="bg-bg-subtle p-5 rounded-3xl border border-border-subtle space-y-5">
+              <div className="flex gap-2 p-1.5 mb-2 rounded-2xl bg-bg-subtle border border-border-subtle">
+                <button
+                  type="button"
+                  onClick={() => setWarnMode('minutes_before')}
+                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                    warnMode === 'minutes_before'
+                      ? 'bg-brand text-white shadow-lg shadow-brand/20'
+                      : 'text-tx-secondary hover:text-tx-primary hover:bg-bg-surface'
+                  }`}
+                >
+                  <Clock className="w-4 h-4" />
+                  Trước N phút
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWarnMode('at_time')}
+                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                    warnMode === 'at_time'
+                      ? 'bg-brand text-white shadow-lg shadow-brand/20'
+                      : 'text-tx-secondary hover:text-tx-primary hover:bg-bg-surface'
+                  }`}
+                >
+                  <Bell className="w-4 h-4" />
+                  Vào giờ cụ thể
+                </button>
+              </div>
+              {warnMode === 'minutes_before' ? (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center font-bold">
+                    <span className="text-tx-secondary text-sm">Khi thời gian dùng đạt:</span>
+                    <span className="text-warning text-lg">{warnMinutesBefore1} phút</span>
+                  </div>
+
+                  <input
+                    type="range"
+                    min={1}
+                    max={120}
+                    step={1}
+                    value={warnMinutesBefore1}
+                    onChange={(e) => setWarnMinutesBefore1(parseInt(e.target.value, 10) || 1)}
+                    className="w-full accent-warning"
+                  />
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-tx-secondary uppercase">Nội dung thông báo</label>
+                    <textarea
+                      value={warnMessage1}
+                      onChange={(e) => setWarnMessage1(e.target.value)}
+                      maxLength={300}
+                      rows={2}
+                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-strong p-3 text-sm focus:outline-none focus:ring-2 focus:ring-warning/20 focus:border-warning transition-all resize-none text-tx-primary"
+                      placeholder="VD: Sắp hết khung giờ rồi, con ơi!"
+                    />
+                    <div className="text-right text-[10px] font-medium text-tx-muted">{warnMessage1.length}/300</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-tx-secondary uppercase">Cảnh báo lúc</label>
+                    <input
+                      type="time"
+                      value={warnAtTime1}
+                      onChange={(e) => setWarnAtTime1(e.target.value)}
+                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-tx-secondary uppercase">Nội dung thông báo</label>
+                    <textarea
+                      value={warnAtTimeMessage1}
+                      onChange={(e) => setWarnAtTimeMessage1(e.target.value)}
+                      placeholder="VD: Sắp hết thời gian dùng mạng hôm nay!"
+                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-strong p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all resize-none h-20 text-tx-primary"
+                    />
+                     <div className="text-right text-[10px] font-medium text-tx-muted">{warnAtTimeMessage1.length}/300</div>
+                  </div>
+
+                  {selectedWebsiteHasWindow && (
+                    <p className="rounded-xl bg-brand-subtle/50 px-3 py-2 text-xs font-medium text-brand border border-brand/10">
+                      Giờ cảnh báo nên nằm trong khung giờ {selectedWebsiteWindowText}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+          <div className={`transition-opacity ${!selectedWebsiteId ? 'opacity-50 pointer-events-none' : ''}`}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="title text-sm font-bold text-tx-primary uppercase tracking-wider flex items-center gap-2">
+                  <span className={`w-6 h-6 rounded-full text-white flex items-center justify-center text-xs ${showWarning2 ? 'bg-error' : 'bg-bg-muted'}`}>3</span>
+                  MỐC CẢNH BÁO 2 (TUỲ CHỌN)
+                </h3>
+                <button 
+                  onClick={() => setShowWarning2(!showWarning2)}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-all ${showWarning2 ? 'bg-error/10 text-error hover:bg-error/20' : 'bg-bg-subtle text-tx-secondary hover:bg-bg-muted'}`}
+                >
+                  {showWarning2 ? 'Bỏ mốc này' : 'Dùng mốc này'}
+                </button>
+              </div>
+
+              {showWarning2 && (
+                <div className="bg-error/5 p-5 rounded-3xl border border-error/10 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex gap-2 p-1.5 mb-2 rounded-2xl bg-bg-subtle border border-border-subtle">
+                    <button
+                      type="button"
+                      onClick={() => setWarnMode('minutes_before')}
+                      className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                        warnMode === 'minutes_before'
+                          ? 'bg-brand text-white shadow-lg shadow-brand/20'
+                          : 'text-tx-secondary hover:text-tx-primary hover:bg-bg-surface'
+                      }`}
+                    >
+                      <Clock className="w-4 h-4" />
+                      Trước N phút
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setWarnMode('at_time')}
+                      className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                        warnMode === 'at_time'
+                          ? 'bg-brand text-white shadow-lg shadow-brand/20'
+                          : 'text-tx-secondary hover:text-tx-primary hover:bg-bg-surface'
+                      }`}
+                    >
+                      <Bell className="w-4 h-4" />
+                      Vào giờ cụ thể
+                    </button>
+                  </div>
+
+                  {warnMode === 'minutes_before' ? (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center font-bold">
+                        <span className="text-tx-secondary text-sm">Khi thời gian dùng đạt:</span>
+                        <span className="text-error text-lg">{warnMinutesBefore2} phút</span>
+                      </div>
+
+                      <input
+                        type="range"
+                        min={1}
+                        max={Math.max(1, warnMinutesBefore1 - 1)}
+                        step={1}
+                        value={warnMinutesBefore2}
+                        onChange={(e) => setWarnMinutesBefore2(parseInt(e.target.value, 10) || 1)}
+                        className="w-full accent-error"
+                      />
+
+                      {warnMinutesBefore2 >= warnMinutesBefore1 && (
+                        <p className="text-xs text-error font-medium">Mốc 2 phải nhỏ hơn mốc 1</p>
+                      )}
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-tx-secondary uppercase">Nội dung thông báo mốc 2</label>
+                        <textarea
+                          value={warnMessage2}
+                          onChange={(e) => setWarnMessage2(e.target.value)}
+                          maxLength={300}
+                          rows={2}
+                          className="input-custom w-full bg-bg-surface rounded-xl border border-error/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error transition-all resize-none text-tx-primary"
+                          placeholder="VD: Còn 5 phút nữa là hết giờ!"
+                        />
+                        <div className="text-right text-[10px] font-medium text-tx-muted">{warnMessage2.length}/300</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-tx-secondary uppercase">Cảnh báo lúc</label>
+                        <input
+                          type="time"
+                          value={warnAtTime2}
+                          onChange={(e) => setWarnAtTime2(e.target.value)}
+                          className="input-custom w-full bg-bg-surface rounded-xl border border-error/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error transition-all text-tx-primary"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-tx-secondary uppercase">Nội dung thông báo mốc 2</label>
+                        <textarea
+                          value={warnAtTimeMessage2}
+                          onChange={(e) => setWarnAtTimeMessage2(e.target.value)}
+                          placeholder="VD: Mốc cảnh báo 2..."
+                          className="input-custom w-full bg-bg-surface rounded-xl border border-error/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error transition-all resize-none h-20 text-tx-primary"
+                        />
+                        <div className="text-right text-[10px] font-medium text-tx-muted">{warnAtTimeMessage2.length}/300</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+          </div>
+
+          <Button
+            className="w-full h-12 rounded-2xl bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand-hover dark:bg-brand dark:hover:bg-brand-hover disabled:opacity-50 disabled:bg-brand/40 disabled:text-white/80 flex items-center justify-center gap-2"
+            onClick={handleSave}
+            disabled={!selectedWebsiteId || upsertTwMutation.isPending}
+          >
+            {upsertTwMutation.isPending ? (
+              'Đang lưu...'
+            ) : (
+              <>
+                <Save className="w-5 h-5 mr-2" />
+                LƯU CẤU HÌNH
+              </>
+            )}
+          </Button>
+        </div>
+
+          <div className="bg-bg-subtle/30 rounded-[2rem] border border-border-base p-6 flex flex-col h-[500px]">
+            <h3 className="title text-sm font-bold text-tx-primary uppercase tracking-wider mb-4 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-success" />
+              CẤU HÌNH ĐANG ÁP DỤNG
+            </h3>
+
+            {isLoading ? (
+              <div className="flex-1 flex justify-center items-center">
+                <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : !twConfigs || twConfigs.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+                <Clock className="w-12 h-12 text-tx-muted/30 mb-4" />
+                <p className="text-sm font-medium text-tx-muted">Chưa có cấu hình cảnh báo nào được tạo.</p>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                {twConfigs.map((config) => {
+                  const website = websites.find((item) => item.id === config.allowedWebsiteId);
+                  const isAtTime = config.warnMode === 'at_time';
+
+                  return (
+                    <div key={config.id} className="bg-bg-surface p-4 rounded-2xl border border-border-base shadow-sm relative group">
+                      <div className="flex items-start justify-between gap-3 mb-2 pr-8">
+                        <div className="min-w-0">
+                          <div className="title font-bold text-tx-primary text-base truncate">
+                            {config.domain ?? website?.domain ?? 'Website'}
+                          </div>
+                          <div className="text-xs text-tx-secondary mt-1">
+                            {website?.allowedStartTime && website?.allowedEndTime
+                              ? formatTimeRange(website.allowedStartTime, website.allowedEndTime)
+                              : 'Không có khung giờ'}
+                          </div>
+                        </div>
+                        <Badge
+                          className={`text-[10px] px-2 py-0 ${
+                            isAtTime
+                              ? 'bg-brand-subtle text-brand hover:bg-brand-subtle'
+                              : 'bg-warning-bg text-warning hover:bg-warning-bg'
+                          }`}
+                        >
+                          {isAtTime ? 'Vào giờ cụ thể' : 'Trước N phút'}
+                        </Badge>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="bg-warning-bg/50 p-2.5 rounded-xl border border-warning/10">
+                          <div className="text-xs font-bold text-warning mb-1">
+                            {isAtTime
+                              ? `Mốc 1: ${formatTimeShort(config.warnAtTime1)}`
+                              : `Mốc 1: ${config.warnMinutesBefore1 ?? 0} phút trước`}
+                          </div>
+                          <div className="text-[13px] text-tx-secondary font-medium italic">
+                            "{config.message1 ?? ''}"
+                          </div>
+                        </div>
+
+                        {isAtTime
+                          ? config.warnAtTime2 && (
+                              <div className="bg-brand-subtle p-2.5 rounded-xl border border-brand/10">
+                                <div className="text-xs font-bold text-brand mb-1">Mốc 2: {formatTimeShort(config.warnAtTime2)}</div>
+                                <div className="text-[13px] text-tx-secondary font-medium italic">
+                                  "{config.message2 ?? ''}"
+                                </div>
+                              </div>
+                            )
+                          : config.warnMinutesBefore2 != null && (
+                              <div className="bg-error/5 p-2.5 rounded-xl border border-error/10">
+                                <div className="text-xs font-bold text-error mb-1">Mốc 2: {config.warnMinutesBefore2} phút trước</div>
+                                <div className="text-[13px] text-tx-secondary font-medium italic">
+                                  "{config.message2 ?? ''}"
+                                </div>
+                              </div>
+                            )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(config)}
+                        className="absolute top-4 right-4 text-tx-muted hover:text-error hover:bg-error/10 w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <ConfirmModal
+          open={showSaveConfirm}
+          title="Xác nhận lưu cấu hình"
+          message={
+            selectedWebsite
+              ? `Lưu cấu hình ${warnMode === 'at_time' ? 'vào giờ cụ thể' : 'trước N phút'} cho ${selectedWebsite.domain}?`
+              : ''
+          }
+          confirmLabel="Có, lưu"
+          cancelLabel="Không"
+          variant="default"
+          onConfirm={executeSave}
+          onCancel={() => setShowSaveConfirm(false)}
+        />
+
+      <ConfirmModal
+        open={Boolean(deleteTarget)}
+        title="Xóa cấu hình cảnh báo"
+        message={deleteTarget ? `Xóa cấu hình cảnh báo cho ${deleteTarget.domain ?? 'website này'}?` : ''}
+        confirmLabel="Xóa"
+        variant="warning"
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          deleteTwMutation.mutate(deleteTarget.id);
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
+    </>
+  );
+}
+
+function formatTimeShort(timeStr?: string | null): string {
+  return timeStr ? timeStr.substring(0, 5) : '';
+}
+
+function formatDurationText(startTime: string, endTime: string): string {
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const totalMinutes = (eh * 60 + em) - (sh * 60 + sm);
+
+  if (totalMinutes <= 0) return '0 phút';
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours === 0) return `${minutes} phút`;
+  if (minutes === 0) return `${hours} giờ`;
+  return `${hours} giờ ${minutes} phút`;
+}
+
+function timeToMinutes(time: string): number {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function isTimeWithinRange(time: string, startTime: string, endTime: string): boolean {
+  const target = timeToMinutes(time);
+  const start = timeToMinutes(startTime);
+  const end = timeToMinutes(endTime);
+
+  if (end <= start) return false;
+  return target >= start && target <= end;
 }
 
 export default function WarningConfigModal({ childId, childName, websites, onClose, defaultTab = 'warning' }: Props) {
@@ -79,7 +694,7 @@ export default function WarningConfigModal({ childId, childName, websites, onClo
         {activeTab === 'warning' ? (
           <WarningTab childId={childId} childName={childName} websites={websites} onClose={onClose} />
         ) : (
-          <TimeWindowTab childId={childId} childName={childName} websites={websites} onClose={onClose} />
+          <RefactoredTimeWindowTab childId={childId} childName={childName} websites={websites} onClose={onClose} />
         )}
       </div>
     </div>
@@ -439,7 +1054,7 @@ function WarningTab({ childId, websites }: Props) {
   );
 }
 
-function TimeWindowTab({ childId, websites }: Props) {
+export function TimeWindowTab({ childId, websites }: Props) {
   const queryClient = useQueryClient();
   const eligibleWebsites = websites.filter((w) => w.timeLimitMinutes == null);
 
@@ -471,16 +1086,16 @@ function TimeWindowTab({ childId, websites }: Props) {
   useEffect(() => {
     if (!selectedWebsiteId) return;
     const web = websites.find((w) => w.id === selectedWebsiteId);
-    if (web?.allowedStartTime) setStartTime(web.allowedStartTime.substring(0, 5));
-    if (web?.allowedEndTime) setEndTime(web.allowedEndTime.substring(0, 5));
+    setStartTime(web?.allowedStartTime ? formatTimeShort(web.allowedStartTime) : '08:00');
+    setEndTime(web?.allowedEndTime ? formatTimeShort(web.allowedEndTime) : '20:00');
 
     // Load tw warning config nếu có
     const existingTw = twConfigs?.find((c) => c.allowedWebsiteId === selectedWebsiteId);
     if (existingTw) {
       setUseWarning(true);
-      setWarnMinutes1(existingTw.warnMinutesBefore1);
-      setMessage1(existingTw.message1);
-      if (existingTw.warnMinutesBefore2) {
+      setWarnMinutes1(existingTw.warnMinutesBefore1 ?? 10);
+      setMessage1(existingTw.message1 ?? '');
+      if (existingTw.warnMinutesBefore2 != null) {
         setUseWarning2(true);
         setWarnMinutes2(existingTw.warnMinutesBefore2);
         setMessage2(existingTw.message2 || '');
@@ -494,7 +1109,7 @@ function TimeWindowTab({ childId, websites }: Props) {
       setUseWarning2(false);
       setMessage2('');
     }
-  }, [selectedWebsiteId, twConfigs]);
+  }, [selectedWebsiteId, twConfigs, websites]);
 
   // ── Mutations ─────────────────────────────────────────────────────────────
   const updateWebsiteMutation = useMutation({
@@ -589,11 +1204,11 @@ function TimeWindowTab({ childId, websites }: Props) {
                 <span className="w-6 h-6 rounded-full bg-brand text-white flex items-center justify-center text-xs">1</span>
                 Chọn website
               </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {eligibleWebsites.map((web) => {
-                  const isSelected = selectedWebsiteId === web.id;
-                  const hasTimeWindow = !!web.allowedStartTime;
-                  const hasMinuteLimit = !!web.timeLimitMinutes;
+                <div className="grid grid-cols-2 gap-3">
+                  {eligibleWebsites.map((web) => {
+                    const isSelected = selectedWebsiteId === web.id;
+                    const hasTimeWindow = !!web.allowedStartTime;
+                    const hasMinuteLimit = !!web.timeLimitMinutes;
                   return (
                     <div
                       key={web.id}
@@ -605,7 +1220,7 @@ function TimeWindowTab({ childId, websites }: Props) {
                       }`}
                     >
                       <div className="title font-bold text-sm text-tx-primary truncate">{web.domain}</div>
-                      <div className="mt-2 flex flex-wrap gap-1">
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         {hasTimeWindow && (
                           <Badge className="bg-brand-subtle text-brand hover:bg-brand-subtle text-[9px] px-1.5 py-0">
                             ⏰ Đang có khung giờ
@@ -618,9 +1233,11 @@ function TimeWindowTab({ childId, websites }: Props) {
                             </Badge>
                           </span>
                         )}
-                        {!hasTimeWindow && !hasMinuteLimit && (
-                          <span className="text-[10px] text-tx-muted">Chưa giới hạn</span>
-                        )}
+                        <span className="text-xs font-medium text-tx-secondary">
+                          {hasTimeWindow && web.allowedEndTime
+                            ? formatTimeRange(web.allowedStartTime, web.allowedEndTime)
+                            : 'Không có khung giờ'}
+                        </span>
                       </div>
                     </div>
                   );
@@ -659,8 +1276,7 @@ function TimeWindowTab({ childId, websites }: Props) {
                 {durationMinutes > 0 ? (
                   <div className="flex items-center gap-2 rounded-xl bg-brand-subtle border border-brand/10 px-4 py-3 text-sm font-medium text-brand">
                     <Clock className="w-4 h-4 shrink-0" />
-                    Con được dùng từ {startTime} đến {endTime} ({Math.floor(durationMinutes / 60)} giờ
-                    {durationMinutes % 60 > 0 ? ` ${durationMinutes % 60} phút` : ''}/ngày)
+                    Con được dùng từ {startTime} đến {endTime} ({formatDurationText(startTime, endTime)}/ngày)
                   </div>
                 ) : startTime && endTime ? (
                   <div className="flex items-center gap-2 rounded-xl bg-error/5 border border-error/10 px-4 py-3 text-sm font-medium text-error">
@@ -770,7 +1386,7 @@ function TimeWindowTab({ childId, websites }: Props) {
 
             {/* Nút Lưu */}
             <Button
-              className="w-full h-12 rounded-2xl bg-violet-600 text-white font-bold uppercase tracking-widest hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-400 disabled:opacity-50 disabled:bg-violet-300 disabled:text-white/80 flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-2xl bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand-hover dark:bg-brand dark:hover:bg-brand-hover disabled:opacity-50 disabled:bg-brand/40 disabled:text-white/80 flex items-center justify-center gap-2"
               onClick={handleSave}
               disabled={!selectedWebsiteId || durationMinutes <= 0 || isSaving}
             >

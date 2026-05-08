@@ -44,6 +44,30 @@ export function formatDuration(seconds: number): string {
   return `${h} giờ ${m} phút`;
 }
 
+function formatTimeShort(timeStr: string): string {
+  return timeStr.substring(0, 5);
+}
+
+function formatTimeDuration(startTime: string, endTime: string): string {
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const totalMinutes = (eh * 60 + em) - (sh * 60 + sm);
+
+  if (totalMinutes <= 0) return '0 phút';
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours === 0) return `${minutes} phút`;
+  if (minutes === 0) return `${hours} giờ`;
+  return `${hours} giờ ${minutes} phút`;
+}
+
+export function formatTimeRange(startTime?: string | null, endTime?: string | null): string {
+  if (!startTime || !endTime) return 'Không có khung giờ';
+  return `${formatTimeShort(startTime)} → ${formatTimeShort(endTime)} · ${formatTimeDuration(startTime, endTime)}/ngày`;
+}
+
 export function formatUsagePercent(seconds: number, limitMinutes?: number): number | null {
   if (!limitMinutes) return null;
   return Math.min(100, Math.round((seconds / (limitMinutes * 60)) * 100));

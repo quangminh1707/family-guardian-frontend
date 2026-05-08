@@ -62,9 +62,9 @@ export default function TimeWindowModal({ childId, childName, websites, onClose 
     const existingTw = twConfigs?.find((c) => c.allowedWebsiteId === selectedWebsiteId);
     if (existingTw) {
       setUseWarning(true);
-      setWarnMinutes1(existingTw.warnMinutesBefore1);
-      setMessage1(existingTw.message1);
-      if (existingTw.warnMinutesBefore2) {
+      setWarnMinutes1(existingTw.warnMinutesBefore1 ?? 10);
+      setMessage1(existingTw.message1 ?? '');
+      if (existingTw.warnMinutesBefore2 != null) {
         setUseWarning2(true);
         setWarnMinutes2(existingTw.warnMinutesBefore2);
         setMessage2(existingTw.message2 || '');

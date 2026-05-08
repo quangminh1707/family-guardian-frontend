@@ -244,11 +244,7 @@ export default function ChildDetailPage() {
           childId={id}
           childName={child.fullName}
           defaultTab="warning"
-          websites={websites?.map((w: any) => ({
-            id: w.id,
-            domain: w.domain,
-            timeLimitMinutes: w.timeLimitMinutes,
-          })) ?? []}
+          websites={websites ?? []}
           onClose={() => setShowWarningConfig(false)}
         />
       )}
