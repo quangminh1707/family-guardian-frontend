@@ -14,4 +14,7 @@ export const childrenApi = {
 
   updateWebsite: (childId: number, websiteId: number, data: UpdateWebsiteRequest) =>
     api.put(`/children/${childId}/websites/${websiteId}`, data),
+
+  pauseInternet: (childId: number) =>
+    api.patch<{ internetPaused: boolean; message: string }>(`/children/${childId}/pause-internet`),
 };

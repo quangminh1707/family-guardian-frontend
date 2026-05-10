@@ -26,6 +26,8 @@ import {
 import { Button } from "../ui/button";
 import { useNotificationStore } from '../../store/notificationStore';
 import { notificationsApi } from '../../api/notifications.api';
+import { accessRequestsApi } from '../../api/accessRequests.api';
+import { AccessRequestCard } from '../ui/AccessRequestCard';
 import { formatRelativeTime } from '../../lib/formatters';
 import { cn } from '../../lib/utils';
 import type { Notification } from '../../types/notification.types';
@@ -42,8 +44,16 @@ function NotificationIcon({ type }: { type: string }) {
 
 function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
   const { setNotifications, markAsRead: markInStore } = useNotificationStore();
   const [expanded, setExpanded] = useState(false);
+
+  const { data: pendingRequests } = useQuery({
+    queryKey: ['access-requests'],
+    queryFn: () => accessRequestsApi.getPending().then(r => r.data),
+    refetchInterval: 30_000,
+    enabled: user?.role === 'Guardian',
+  });
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications'],
@@ -112,6 +122,21 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
 
       {/* Notification list */}
       <div className="max-h-[360px] overflow-y-auto divide-y divide-border-subtle">
+        {pendingRequests && pendingRequests.length > 0 && (
+          <div className="p-3 border-b border-border-base bg-bg-surface">
+            <p className="text-[10px] font-bold text-tx-secondary uppercase tracking-wider mb-2 px-1">
+              Yêu cầu truy cập ({pendingRequests.length})
+            </p>
+            <div className="space-y-2">
+              {pendingRequests.map((req) => (
+                <div key={req.id} className="scale-[0.95] origin-top">
+                  <AccessRequestCard request={req} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="py-8 flex flex-col items-center gap-2 text-gray-400">
             <div className="w-5 h-5 border-2 border-violet-300 border-t-violet-600 rounded-full animate-spin" />
@@ -182,6 +207,16 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
 export default function Topbar() {
   const { user, logout } = useAuthStore();
   const { unreadCount } = useNotificationStore();
+
+  const { data: pendingRequests } = useQuery({
+    queryKey: ['access-requests'],
+    queryFn: () => accessRequestsApi.getPending().then(r => r.data),
+    refetchInterval: 30_000,
+    enabled: user?.role === 'Guardian',
+  });
+
+  const totalUnread = unreadCount + (pendingRequests?.length ?? 0);
+
   const [bellOpen, setBellOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
@@ -224,9 +259,9 @@ export default function Topbar() {
             onClick={() => setBellOpen((prev) => !prev)}
           >
             <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
+            {totalUnread > 0 && (
               <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-bg-surface animate-pulse">
-                {unreadCount > 9 ? '9+' : unreadCount}
+                {totalUnread > 9 ? '9+' : totalUnread}
               </span>
             )}
           </Button>

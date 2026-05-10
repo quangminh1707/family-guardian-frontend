@@ -28,6 +28,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { SessionHistoryTab } from '../components/logs/SessionHistoryTab';
 import { UsageSummaryTab } from '../components/logs/UsageSummaryTab';
 import { FilterToggle } from '../components/children/FilterToggle';
+import { InternetPauseToggle } from '../components/children/InternetPauseToggle';
 
 export default function ChildDetailPage() {
   const { childId } = useParams();
@@ -137,12 +138,18 @@ export default function ChildDetailPage() {
         </div>
       </div>
 
-      {/* Filter Toggle */}
-      <FilterToggle 
-        childId={id} 
-        initialEnabled={child.filterEnabled ?? false}
-      />
-      
+      {/* Controls: Filter & Kill Switch */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FilterToggle 
+          childId={id} 
+          initialEnabled={child.filterEnabled ?? false}
+        />
+        <InternetPauseToggle
+          childId={id}
+          initialPaused={child.internetPaused ?? false}
+          childName={child.fullName}
+        />
+      </div>
 
       {/* Tabs */}
       <Tabs defaultValue="websites" className="space-y-8">

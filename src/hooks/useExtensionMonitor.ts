@@ -89,6 +89,24 @@ export function useExtensionMonitor() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     });
 
+    // ─── Lắng nghe yêu cầu truy cập từ con ─────────────────────
+    connection.on('AccessRequest', (data: {
+      childName: string;
+      childAvatarUrl?: string;
+      domain: string;
+      message: string;
+    }) => {
+      toast.warning(`🔔 ${data.childName} muốn truy cập ${data.domain}`, {
+        duration: 10_000,
+        action: {
+          label: 'Xem yêu cầu',
+          onClick: () => window.location.href = '/notifications'
+        }
+      });
+      queryClient.invalidateQueries({ queryKey: ['access-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    });
+
     return () => {
       connection.stop();
     };

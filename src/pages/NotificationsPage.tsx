@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationsApi } from '../api/notifications.api';
+import { accessRequestsApi } from '../api/accessRequests.api';
 import { useNotificationStore } from '../store/notificationStore';
 import { 
   AlertTriangle, 
@@ -15,6 +16,7 @@ import { formatRelativeTime } from '../lib/formatters';
 import { cn } from '../lib/utils';
 import { Skeleton } from '../components/ui/skeleton';
 import { toast } from '../components/feedback';
+import { AccessRequestCard } from '../components/ui';
 
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
@@ -27,6 +29,12 @@ export default function NotificationsPage() {
       return res.data;
     }),
   });
+
+  const { data: accessRequests } = useQuery({
+    queryKey: ['access-requests'],
+    queryFn: () => accessRequestsApi.getPending().then(res => res.data),
+  });
+
 
   const markAsReadMutation = useMutation({
     mutationFn: (id: number) => notificationsApi.markAsRead(id),
@@ -89,7 +97,30 @@ export default function NotificationsPage() {
          </Button>
       </div>
 
-      {isLoading ? (
+      {/* Access Requests Section */}
+      {accessRequests && accessRequests.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-tx-primary flex items-center gap-2">
+            <span className="bg-warning text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">
+              {accessRequests.length}
+            </span>
+            Yêu cầu chờ duyệt
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {accessRequests.map((req) => (
+              <AccessRequestCard
+                key={req.id}
+                request={req}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Notifications Section */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-tx-primary">Tất cả thông báo</h3>
+        {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 w-full rounded-[2rem]" />)}
         </div>
@@ -161,6 +192,7 @@ export default function NotificationsPage() {
            </p>
         </div>
       )}
+      </div>
     </div>
   );
 }
