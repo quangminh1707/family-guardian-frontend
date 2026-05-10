@@ -4,6 +4,52 @@
  * → Chrome interpret là local time (UTC+7) → lệch 7 tiếng.
  * Fix: gắn 'Z' nếu chưa có timezone info.
  */
+export function normalizeBackendDate(dateStr: string): Date {
+  if (!dateStr) return new Date(NaN);
+  const hasTimezone = dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr);
+  return new Date(hasTimezone ? dateStr : `${dateStr}Z`);
+}
+
+export function formatTimeVN(dateStr: string): string {
+  if (!dateStr) return '—';
+  const date = toUtcDate(dateStr);
+  if (isNaN(date.getTime())) return '—';
+  return date.toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+}
+
+export function formatDateTimeVN(dateStr: string): string {
+  if (!dateStr) return '—';
+  const date = toUtcDate(dateStr);
+  if (isNaN(date.getTime())) return '—';
+
+  const now = new Date();
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isToday) {
+    return `Hôm nay ${formatTimeVN(dateStr)}`;
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  if (isYesterday) {
+    return `Hôm qua ${formatTimeVN(dateStr)}`;
+  }
+
+  return `${date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })} ${formatTimeVN(dateStr)}`;
+}
+
 function toUtcDate(dateStr: string): Date {
   if (!dateStr) return new Date(NaN);
   const hasTimezone = dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr);
@@ -12,7 +58,7 @@ function toUtcDate(dateStr: string): Date {
 
 export function formatRelativeTime(dateStr: string): string {
   if (!dateStr) return '—';
-  const date = toUtcDate(dateStr);
+  const date = normalizeBackendDate(dateStr);
   if (isNaN(date.getTime())) return '—';
   const diff = Date.now() - date.getTime();
   if (diff < 0) return 'Vừa xong';
@@ -26,7 +72,7 @@ export function formatRelativeTime(dateStr: string): string {
 
 export function formatDateTime(dateStr: string): string {
   if (!dateStr) return '—';
-  const date = toUtcDate(dateStr);
+  const date = normalizeBackendDate(dateStr);
   if (isNaN(date.getTime())) return '—';
   return new Intl.DateTimeFormat('vi-VN', {
     day: '2-digit', month: '2-digit', year: 'numeric',

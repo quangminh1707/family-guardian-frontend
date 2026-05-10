@@ -140,10 +140,12 @@ export default function ChildDetailPage() {
 
       {/* Controls: Filter & Kill Switch */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FilterToggle 
-          childId={id} 
-          initialEnabled={child.filterEnabled ?? false}
-        />
+        <div className={child.internetPaused ? 'opacity-40 pointer-events-none select-none' : ''}>
+          <FilterToggle
+            childId={id}
+            initialEnabled={child.filterEnabled ?? false}
+          />
+        </div>
         <InternetPauseToggle
           childId={id}
           initialPaused={child.internetPaused ?? false}
@@ -151,7 +153,14 @@ export default function ChildDetailPage() {
         />
       </div>
 
+      {child.internetPaused && (
+        <div className="rounded-[2rem] border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm font-medium text-red-600 dark:text-red-300">
+          Internet của bé đang bị tạm dừng. Các phần quản lý bên dưới đang được làm mờ cho đến khi bật lại.
+        </div>
+      )}
+
       {/* Tabs */}
+      <div className={child.internetPaused ? 'opacity-40 pointer-events-none select-none' : ''}>
       <Tabs defaultValue="websites" className="space-y-8">
         <div className="flex items-center justify-between">
           <TabsList className="bg-bg-surface p-1 rounded-2xl border border-border-base shadow-sm inline-flex">
@@ -245,6 +254,7 @@ export default function ChildDetailPage() {
            <UsageSummaryTab childId={id} />
         </TabsContent>
       </Tabs>
+      </div>
 
       {showWarningConfig && child && (
         <WarningConfigModal

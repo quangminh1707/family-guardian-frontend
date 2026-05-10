@@ -24,7 +24,7 @@ interface Props {
   defaultTab?: 'warning' | 'timewindow';
 }
 
-function RefactoredTimeWindowTab({ childId, websites, onClose }: Props) {
+function RefactoredTimeWindowTab({ childId, websites }: Props) {
   const queryClient = useQueryClient();
   const eligibleWebsites = websites.filter((website) => website.timeLimitMinutes == null);
 

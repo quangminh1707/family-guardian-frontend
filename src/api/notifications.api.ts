@@ -2,8 +2,8 @@ import api from './axios';
 import type { Notification } from '../types/notification.types';
 
 export const notificationsApi = {
-  getNotifications: () => 
-    api.get<Notification[]>('/notifications'),
+  getNotifications: (filter: 'all' | 'unread' | 'read' = 'all') => 
+    api.get<Notification[]>(`/notifications?filter=${filter}`),
 
   getUnread: () =>
     api.get<Notification[]>('/notifications/unread'),

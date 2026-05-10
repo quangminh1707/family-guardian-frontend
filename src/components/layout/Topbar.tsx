@@ -49,16 +49,16 @@ function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const [expanded, setExpanded] = useState(false);
 
   const { data: pendingRequests } = useQuery({
-    queryKey: ['access-requests'],
+    queryKey: ['access-requests', 'pending'],
     queryFn: () => accessRequestsApi.getPending().then(r => r.data),
     refetchInterval: 30_000,
     enabled: user?.role === 'Guardian',
   });
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: ['notifications'],
+    queryKey: ['notifications', 'all'],
     queryFn: () =>
-      notificationsApi.getNotifications().then((res) => {
+      notificationsApi.getNotifications('all').then((res) => {
         setNotifications(res.data);
         return res.data;
       }),
@@ -209,7 +209,7 @@ export default function Topbar() {
   const { unreadCount } = useNotificationStore();
 
   const { data: pendingRequests } = useQuery({
-    queryKey: ['access-requests'],
+    queryKey: ['access-requests', 'pending'],
     queryFn: () => accessRequestsApi.getPending().then(r => r.data),
     refetchInterval: 30_000,
     enabled: user?.role === 'Guardian',
