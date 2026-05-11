@@ -155,7 +155,7 @@ export default function ChildDetailPage() {
 
       {child.internetPaused && (
         <div className="rounded-[2rem] border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm font-medium text-red-600 dark:text-red-300">
-          Internet của bé đang bị tạm dừng. Các phần quản lý bên dưới đang được làm mờ cho đến khi bật lại.
+          Internet của Tài khoản này đang bị tạm dừng. Các phần quản lý bên dưới đang được làm mờ cho đến khi bật lại.
         </div>
       )}
 

@@ -1,40 +1,40 @@
 /**
- * Normalize date string về UTC.
- * Backend dùng DateTime.UtcNow nhưng serialize không có 'Z' suffix
- * → Chrome interpret là local time (UTC+7) → lệch 7 tiếng.
- * Fix: gắn 'Z' nếu chưa có timezone info.
+ * Parse datetime string từ backend.
+ * Backend dùng DateTime.Now (local UTC+7) -> string không có suffix
+ * -> JS new Date() tự hiểu là local time -> ĐÚNG, KHÔNG cần append 'Z'
+ * Nếu string đã có suffix (Z hoặc +07:00) -> giữ nguyên
  */
 export function normalizeBackendDate(dateStr: string): Date {
-  if (!dateStr) return new Date(NaN);
-  const hasTimezone = dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr);
-  return new Date(hasTimezone ? dateStr : `${dateStr}Z`);
+  if (!dateStr) return new Date();
+  if (dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr)) {
+    return new Date(dateStr);
+  }
+  return new Date(dateStr);
 }
 
+/**
+ * Format giờ 24h: "16:27", "08:05"
+ */
 export function formatTimeVN(dateStr: string): string {
-  if (!dateStr) return '—';
-  const date = toUtcDate(dateStr);
-  if (isNaN(date.getTime())) return '—';
-  return date.toLocaleTimeString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+  const date = normalizeBackendDate(dateStr);
+  const h = date.getHours().toString().padStart(2, '0');
+  const m = date.getMinutes().toString().padStart(2, '0');
+  return `${h}:${m}`;
 }
 
+/**
+ * Format ngày + giờ đầy đủ cho card yêu cầu
+ * Kết quả: "Hôm nay 16:27", "Hôm qua 08:05", "10/05 14:30"
+ */
 export function formatDateTimeVN(dateStr: string): string {
-  if (!dateStr) return '—';
-  const date = toUtcDate(dateStr);
-  if (isNaN(date.getTime())) return '—';
-
+  const date = normalizeBackendDate(dateStr);
   const now = new Date();
+
   const isToday =
     date.getDate() === now.getDate() &&
     date.getMonth() === now.getMonth() &&
     date.getFullYear() === now.getFullYear();
-
-  if (isToday) {
-    return `Hôm nay ${formatTimeVN(dateStr)}`;
-  }
+  if (isToday) return `Hôm nay ${formatTimeVN(dateStr)}`;
 
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
@@ -42,42 +42,41 @@ export function formatDateTimeVN(dateStr: string): string {
     date.getDate() === yesterday.getDate() &&
     date.getMonth() === yesterday.getMonth() &&
     date.getFullYear() === yesterday.getFullYear();
+  if (isYesterday) return `Hôm qua ${formatTimeVN(dateStr)}`;
 
-  if (isYesterday) {
-    return `Hôm qua ${formatTimeVN(dateStr)}`;
-  }
-
-  return `${date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })} ${formatTimeVN(dateStr)}`;
+  const d = date.getDate().toString().padStart(2, '0');
+  const mo = (date.getMonth() + 1).toString().padStart(2, '0');
+  return `${d}/${mo} ${formatTimeVN(dateStr)}`;
 }
 
-function toUtcDate(dateStr: string): Date {
-  if (!dateStr) return new Date(NaN);
-  const hasTimezone = dateStr.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(dateStr);
-  return new Date(hasTimezone ? dateStr : dateStr + 'Z');
-}
-
+/**
+ * Format thời gian tương đối: "vừa xong", "5 phút trước", "2 giờ trước"
+ * Dùng Date.now() để tính diff — không phụ thuộc timezone server
+ */
 export function formatRelativeTime(dateStr: string): string {
-  if (!dateStr) return '—';
   const date = normalizeBackendDate(dateStr);
-  if (isNaN(date.getTime())) return '—';
-  const diff = Date.now() - date.getTime();
-  if (diff < 0) return 'Vừa xong';
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'Vừa xong';
-  if (mins < 60) return `${mins} phút trước`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours} giờ trước`;
-  return `${Math.floor(hours / 24)} ngày trước`;
+  const diffMs = Date.now() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return 'vừa xong';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} phút trước`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH} giờ trước`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD === 1) return 'hôm qua';
+  return `${diffD} ngày trước`;
 }
 
 export function formatDateTime(dateStr: string): string {
-  if (!dateStr) return '—';
   const date = normalizeBackendDate(dateStr);
-  if (isNaN(date.getTime())) return '—';
   return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-    timeZone: 'Asia/Ho_Chi_Minh'
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'Asia/Ho_Chi_Minh',
   }).format(date);
 }
 
@@ -97,7 +96,7 @@ function formatTimeShort(timeStr: string): string {
 function formatTimeDuration(startTime: string, endTime: string): string {
   const [sh, sm] = startTime.split(':').map(Number);
   const [eh, em] = endTime.split(':').map(Number);
-  const totalMinutes = (eh * 60 + em) - (sh * 60 + sm);
+  const totalMinutes = eh * 60 + em - (sh * 60 + sm);
 
   if (totalMinutes <= 0) return '0 phút';
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { accessRequestsApi } from '../../api/accessRequests.api';
 import type { AccessRequestDto, RespondAccessRequestDto } from '../../api/accessRequests.api';
-import { formatDateTimeVN } from '../../lib/formatters';
+import { formatDateTimeVN, formatRelativeTime } from '../../lib/formatters';
 import { toast } from '../feedback';
 import ConfirmModal from '../feedback/ConfirmModal';
 
@@ -292,7 +292,12 @@ export function AccessRequestCard({ request }: Props) {
             </div>
             <p className="mt-0.5 text-xs text-tx-secondary">{contextText()}</p>
           </div>
-          <span className="flex-shrink-0 text-xs text-tx-secondary">{formatDateTimeVN(request.requestedAt)}</span>
+          <span
+            className="flex-shrink-0 text-xs text-tx-secondary"
+            title={formatDateTimeVN(request.requestedAt)}
+          >
+            {formatRelativeTime(request.requestedAt)}
+          </span>
         </div>
 
         <div className="mt-3 flex items-center gap-2 rounded-lg border border-border-base/50 bg-bg-subtle p-2">

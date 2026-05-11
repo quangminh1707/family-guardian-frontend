@@ -12,7 +12,11 @@ import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { ConfirmModal } from '../feedback';
 
-export default function Sidebar() {
+interface SidebarProps {
+  onLinkClick?: () => void;
+}
+
+export default function Sidebar({ onLinkClick }: SidebarProps) {
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -39,6 +43,7 @@ export default function Sidebar() {
           <Link
             key={item.path}
             to={item.path}
+            onClick={() => onLinkClick?.()}
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
               location.pathname.startsWith(item.path)

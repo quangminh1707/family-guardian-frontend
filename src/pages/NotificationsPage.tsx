@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationsApi } from '../api/notifications.api';
 import { accessRequestsApi } from '../api/accessRequests.api';
@@ -12,13 +12,19 @@ import { toast } from '../components/feedback';
 import { AccessRequestCard } from '../components/ui';
 import { useAuthStore } from '../store/authStore';
 
+const NOTIF_PAGE_SIZE = 5;
+
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const { setNotifications, markAsRead: markInStore } = useNotificationStore();
   const [activeTab, setActiveTab] = useState<'requests' | 'notifications'>('requests');
   const [requestFilter, setRequestFilter] = useState<'pending' | 'handled' | 'all'>('pending');
+  const [reasonFilter, setReasonFilter] = useState<
+    'all' | 'internet_paused' | 'time_limit_exceeded' | 'not_in_whitelist'
+  >('all');
   const [notifFilter, setNotifFilter] = useState<'all' | 'unread' | 'read'>('all');
+  const [notifShowAll, setNotifShowAll] = useState(false);
 
   const { data: requests, isLoading: requestsLoading } = useQuery({
     queryKey: ['access-requests', requestFilter],
@@ -29,10 +35,11 @@ export default function NotificationsPage() {
 
   const { data: notifications, isLoading: notificationsLoading } = useQuery({
     queryKey: ['notifications', notifFilter],
-    queryFn: () => notificationsApi.getNotifications(notifFilter).then((res) => {
-      setNotifications(res.data);
-      return res.data;
-    }),
+    queryFn: () =>
+      notificationsApi.getNotifications(notifFilter).then((res) => {
+        setNotifications(res.data);
+        return res.data;
+      }),
     refetchInterval: 30_000,
   });
 
@@ -63,6 +70,14 @@ export default function NotificationsPage() {
   const unreadCount = notifications?.filter((n) => !n.isRead).length ?? 0;
   const hasUnread = unreadCount > 0;
   const showRequests = activeTab === 'requests';
+  const filteredRequests = (requests ?? []).filter((req) =>
+    reasonFilter === 'all' ? true : req.reason === reasonFilter
+  );
+  const filteredNotifications = notifications ?? [];
+  const visibleNotifications = notifShowAll
+    ? filteredNotifications
+    : filteredNotifications.slice(0, NOTIF_PAGE_SIZE);
+  const hasMoreNotifications = filteredNotifications.length > NOTIF_PAGE_SIZE;
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -86,12 +101,22 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleRequestFilterChange = (f: typeof requestFilter) => {
+    setRequestFilter(f);
+    setReasonFilter('all');
+  };
+
+  const handleNotifFilterChange = (f: typeof notifFilter) => {
+    setNotifFilter(f);
+    setNotifShowAll(false);
+  };
+
   const renderRequestFilters = () => (
-    <div className="mb-4 flex gap-2">
+    <div className="mb-4 flex flex-wrap gap-2">
       {(['pending', 'handled', 'all'] as const).map((f) => (
         <button
           key={f}
-          onClick={() => setRequestFilter(f)}
+          onClick={() => handleRequestFilterChange(f)}
           className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
             requestFilter === f
               ? 'border-brand-DEFAULT bg-brand-DEFAULT/10 text-brand-DEFAULT'
@@ -104,12 +129,37 @@ export default function NotificationsPage() {
     </div>
   );
 
+  const renderReasonFilters = () => (
+    <div className="flex flex-wrap gap-2 mb-4">
+      {(
+        [
+          { value: 'all', label: 'Tất cả loại' },
+          { value: 'internet_paused', label: '⏸ Tạm dừng Internet' },
+          { value: 'time_limit_exceeded', label: '⏱ Hết giờ sử dụng' },
+          { value: 'not_in_whitelist', label: '🌐 Web mới' },
+        ] as const
+      ).map((f) => (
+        <button
+          key={f.value}
+          onClick={() => setReasonFilter(f.value)}
+          className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
+            reasonFilter === f.value
+              ? 'bg-bg-surface border-tx-secondary text-tx-primary'
+              : 'bg-bg-subtle border-border-base text-tx-secondary hover:border-tx-secondary/50'
+          }`}
+        >
+          {f.label}
+        </button>
+      ))}
+    </div>
+  );
+
   const renderNotificationFilters = () => (
-    <div className="mb-4 flex gap-2">
+    <div className="mb-4 flex flex-wrap gap-2">
       {(['all', 'unread', 'read'] as const).map((f) => (
         <button
           key={f}
-          onClick={() => setNotifFilter(f)}
+          onClick={() => handleNotifFilterChange(f)}
           className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
             notifFilter === f
               ? 'border-brand-DEFAULT bg-brand-DEFAULT/10 text-brand-DEFAULT'
@@ -123,8 +173,8 @@ export default function NotificationsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      <div className="flex items-center justify-between gap-4">
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h2 className="text-3xl font-black uppercase tracking-tight text-tx-primary">Thông báo</h2>
           <p className="font-medium text-tx-secondary">Theo dõi yêu cầu và thông báo từ hệ thống.</p>
@@ -135,7 +185,7 @@ export default function NotificationsPage() {
             variant="outline"
             onClick={() => markAllAsReadMutation.mutate()}
             disabled={!hasUnread || markAllAsReadMutation.isPending}
-            className="h-12 rounded-2xl border-border-base text-[10px] font-bold uppercase tracking-widest disabled:opacity-40"
+            className="h-12 w-full rounded-2xl border-border-base text-[10px] font-bold uppercase tracking-widest disabled:opacity-40 sm:w-auto"
           >
             <CheckCircle2 className="h-5 w-8" />
             Đánh dấu tất cả đã đọc
@@ -143,10 +193,10 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      <div className="flex w-fit gap-1 rounded-xl border border-border-base bg-bg-subtle p-1">
+      <div className="flex w-full flex-wrap gap-1 rounded-xl border border-border-base bg-bg-subtle p-1 sm:w-fit">
         <button
           onClick={() => setActiveTab('requests')}
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+          className={`min-w-[140px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all sm:flex-none ${
             activeTab === 'requests' ? 'bg-brand-DEFAULT text-white shadow-sm' : 'text-tx-secondary hover:text-tx-primary'
           }`}
         >
@@ -159,7 +209,7 @@ export default function NotificationsPage() {
         </button>
         <button
           onClick={() => setActiveTab('notifications')}
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+          className={`min-w-[140px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all sm:flex-none ${
             activeTab === 'notifications' ? 'bg-brand-DEFAULT text-white shadow-sm' : 'text-tx-secondary hover:text-tx-primary'
           }`}
         >
@@ -174,6 +224,8 @@ export default function NotificationsPage() {
 
       {showRequests ? renderRequestFilters() : renderNotificationFilters()}
 
+      {showRequests && renderReasonFilters()}
+
       {showRequests ? (
         <div className="space-y-4">
           {requestsLoading ? (
@@ -182,9 +234,9 @@ export default function NotificationsPage() {
                 <Skeleton key={i} className="h-28 w-full rounded-[2rem]" />
               ))}
             </div>
-          ) : requests && requests.length > 0 ? (
+          ) : filteredRequests.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {requests.map((req) => (
+              {filteredRequests.map((req) => (
                 <AccessRequestCard key={req.id} request={req} />
               ))}
             </div>
@@ -208,9 +260,9 @@ export default function NotificationsPage() {
                 <Skeleton key={i} className="h-28 w-full rounded-[2rem]" />
               ))}
             </div>
-          ) : notifications && notifications.length > 0 ? (
+          ) : filteredNotifications.length > 0 ? (
             <div className="space-y-4">
-              {notifications.map((n) => (
+              {visibleNotifications.map((n) => (
                 <div
                   key={n.id}
                   className={cn(
@@ -219,7 +271,7 @@ export default function NotificationsPage() {
                     !n.isRead ? 'border-brand/20 bg-brand-subtle/30' : 'bg-bg-surface/60'
                   )}
                 >
-                  <div className="flex gap-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
                     <div
                       className={cn(
                         'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-inner',
@@ -229,7 +281,7 @@ export default function NotificationsPage() {
                       {getIcon(n.type)}
                     </div>
                     <div className="flex-1 space-y-1">
-                      <div className="mb-1 flex items-center justify-between">
+                      <div className="mb-1 flex items-start justify-between gap-3">
                         <h3 className={cn('text-lg font-bold tracking-tight', n.isRead ? 'text-tx-secondary' : 'text-tx-primary')}>
                           {n.title}
                         </h3>
@@ -252,7 +304,11 @@ export default function NotificationsPage() {
                             Đánh dấu đã đọc
                           </Button>
                         )}
-                        <Button variant="ghost" size="sm" className="h-8 w-8 rounded-xl p-0 text-tx-muted hover:bg-error-bg hover:text-red-500">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 rounded-xl p-0 text-tx-muted hover:bg-error-bg hover:text-red-500"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -262,6 +318,17 @@ export default function NotificationsPage() {
                   </div>
                 </div>
               ))}
+
+              {hasMoreNotifications && (
+                <button
+                  onClick={() => setNotifShowAll((prev) => !prev)}
+                  className="w-full mt-3 py-2.5 text-sm font-medium text-tx-secondary hover:text-tx-primary border border-border-base rounded-xl bg-bg-subtle hover:bg-bg-surface transition-colors"
+                >
+                  {notifShowAll
+                    ? '↑ Thu gọn'
+                    : `↓ Xem thêm ${filteredNotifications.length - NOTIF_PAGE_SIZE} thông báo`}
+                </button>
+              )}
             </div>
           ) : (
             <div className="rounded-[3rem] border border-dashed border-border-subtle bg-bg-surface p-24 text-center">
