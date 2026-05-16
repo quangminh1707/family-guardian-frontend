@@ -10,4 +10,5 @@ export * from "./sheet";
 export * from "./skeleton";
 export * from "./switch";
 export * from "./tabs";
+export * from "./FilterDropdown";
 export * from "./AccessRequestCard";

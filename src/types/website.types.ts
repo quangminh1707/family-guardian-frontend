@@ -12,6 +12,8 @@ export interface AllowedWebsite {
   httpStatusCode?: number;
   lastCheckedAt?: string;
   todaySeconds: number;
+  todayBonusSeconds?: number;
+  effectiveSeconds?: number;
   todayRequests: number;
   limitExceeded: boolean;
 }

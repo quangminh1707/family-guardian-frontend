@@ -58,16 +58,14 @@ export function InternetPauseToggle({ childId, initialPaused, childName }: Inter
   return (
     <>
       <div className={cn(
-        "filter-card flex items-center gap-5 rounded-[2rem] border p-5 shadow-sm transition-all duration-300 hover:shadow-md transition-colors",
-        paused 
-          ? "bg-error-bg/30 border-error/20" 
-          : "bg-gradient-to-br from-bg-surface to-bg-subtle/50 border-border-base"
+        "filter-card flex items-center gap-5 rounded-[2rem] border border-border-base bg-bg-surface p-5 shadow-sm transition-all duration-300 hover:shadow-md transition-colors",
+        paused && "ring-1 ring-red-500/10"
       )}>
         <div className={cn(
           "toggle-wrapper flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
           paused 
-            ? "bg-error/10 text-error ring-error/20" 
-            : "bg-success/10 text-success ring-success/20"
+            ? "bg-red-500/10 text-red-500 ring-red-500/20" 
+            : "bg-bg-subtle text-tx-secondary ring-border-base"
         )}>
           {paused ? <WifiOff className="h-6 w-6" /> : <Wifi className="h-6 w-6" />}
         </div>
@@ -76,7 +74,7 @@ export function InternetPauseToggle({ childId, initialPaused, childName }: Inter
           <div className="mb-0.5 flex items-center gap-2">
             <span className={cn(
               "text-sm font-black uppercase tracking-tight",
-              paused ? "text-error" : "text-tx-primary"
+              paused ? "text-red-500 dark:text-red-400" : "text-tx-primary"
             )}>
               {paused ? 'Đã tạm dừng Internet' : 'Kết nối Internet'}
             </span>
@@ -95,12 +93,12 @@ export function InternetPauseToggle({ childId, initialPaused, childName }: Inter
             checked={paused}
             onCheckedChange={handleToggleRequest}
             disabled={isLoading}
-            className={paused ? 'data-[state=checked]:bg-error' : ''}
+            className={paused ? 'data-[state=checked]:bg-red-500 data-[state=checked]:shadow-[inset_0_0_0_2px_rgba(239,68,68,0.45)]' : ''}
           />
           <span
             className={cn(
               'text-[9px] font-black uppercase tracking-widest',
-              paused ? 'text-error' : 'text-success'
+              paused ? 'text-red-500 dark:text-red-400' : 'text-success'
             )}
           >
             {paused ? 'PAUSED' : 'ACTIVE'}

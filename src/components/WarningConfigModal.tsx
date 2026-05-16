@@ -877,7 +877,7 @@ function WarningTab({ childId, websites }: Props) {
                       </div>
                     );
                   })}
-                  {selectedWebsites.length > 3 && <div className="text-xs text-center text-gray-400 mt-1">...và {selectedWebsites.length - 3} web khác</div>}
+                  {selectedWebsites.length > 3 && <div className="text-xs text-center text-tx-muted mt-1">...và {selectedWebsites.length - 3} web khác</div>}
                 </div>
 
                 <div className="space-y-2">
@@ -948,7 +948,7 @@ function WarningTab({ childId, websites }: Props) {
 
             {/* Save Button */}
             <Button
-              className="w-full h-12 rounded-2xl bg-violet-600 text-white font-bold uppercase tracking-widest hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-400 disabled:opacity-50 disabled:bg-violet-300 disabled:text-white/80 flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-2xl bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand-hover dark:bg-brand dark:hover:bg-brand-hover disabled:opacity-50 disabled:bg-brand/40 disabled:text-white/80 flex items-center justify-center gap-2"
               onClick={handleSave}
               disabled={selectedWebsites.length === 0 || !threshold1Message.trim() || upsertMutation.isPending}
             >
@@ -970,7 +970,7 @@ function WarningTab({ childId, websites }: Props) {
 
             {isLoading ? (
               <div className="flex-1 flex justify-center items-center">
-                <div className="w-6 h-6 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
               </div>
             ) : !configs || configs.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-4">

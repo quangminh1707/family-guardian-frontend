@@ -165,7 +165,7 @@ export default function WebsiteCard({
                             ? 'bg-red-500'
                             : timeWindowProgress.usedPercent >= 80
                               ? 'bg-orange-400'
-                              : 'bg-violet-500',
+                              : 'bg-brand',
                         )}
                         style={{ width: `${Math.min(timeWindowProgress.usedPercent, 100)}%` }}
                       />
@@ -176,7 +176,7 @@ export default function WebsiteCard({
                           'font-bold',
                           timeWindowProgress.usedPercent >= 100
                             ? 'text-red-500'
-                            : 'text-violet-600 dark:text-violet-400',
+                            : 'text-brand dark:text-brand',
                         )}
                       >
                         {timeWindowProgress.usedPercent}% ĐÃ DÙNG
@@ -193,7 +193,7 @@ export default function WebsiteCard({
                 ) : (
                   <div className="flex items-center justify-between rounded-xl border border-border-base bg-bg-subtle px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-tx-muted">
                     <span className="flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5 text-violet-500" />
+                      <Clock className="h-3.5 w-3.5 text-brand" />
                       Ngoài khung giờ
                     </span>
                     <span>

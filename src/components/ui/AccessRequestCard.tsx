@@ -47,6 +47,139 @@ function StatusBadge({ status }: { status: string }) {
   return null;
 }
 
+function MinutesExtendForm({
+  request,
+  mutation,
+  onReject,
+}: {
+  request: AccessRequestDto;
+  mutation: any;
+  onReject: () => void;
+}) {
+  const [minutes, setMinutes] = useState(request.requestedDurationMinutes ?? 30);
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-tx-secondary">Gia hạn thêm:</span>
+        <div className="flex gap-1.5">
+          {[15, 30, 60].map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMinutes(m)}
+              className={`rounded-lg border px-2.5 py-1 text-xs transition-colors ${
+                minutes === m
+                  ? 'border-amber-500/40 bg-amber-500/20 text-amber-500'
+                  : 'border-border-base bg-bg-subtle text-tx-secondary hover:border-amber-500/30'
+              }`}
+            >
+              {m}p
+            </button>
+          ))}
+          <input
+            type="number"
+            value={minutes}
+            onChange={(e) => setMinutes(Math.max(0, Number(e.target.value)))}
+            min={0}
+            max={480}
+            className="w-16 rounded-lg border border-border-base bg-bg-subtle px-2 py-1 text-center text-xs text-tx-primary focus:border-amber-500/50 focus:outline-none"
+          />
+          <span className="self-center text-xs text-tx-secondary">phút</span>
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => mutation.mutate({ action: 'extend_time', durationMinutes: minutes })}
+          disabled={mutation.isPending}
+          className="flex-1 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-400"
+        >
+          ⏱ Gia hạn {minutes} phút
+        </button>
+        <button
+          type="button"
+          onClick={onReject}
+          disabled={mutation.isPending}
+          className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function WindowExtendForm({
+  request,
+  mutation,
+  onReject,
+}: {
+  request: AccessRequestDto;
+  mutation: any;
+  onReject: () => void;
+}) {
+  const [startTime, setStartTime] = useState(request.websiteAllowedStartTime ?? '07:00');
+  const [endTime, setEndTime] = useState(() => {
+    if (!request.websiteAllowedEndTime) return '21:00';
+    const [h, m] = request.websiteAllowedEndTime.split(':').map(Number);
+    const total = h * 60 + m + 30;
+    return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  });
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-tx-secondary">Điều chỉnh khung giờ:</p>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="mb-1 block text-[11px] text-tx-secondary">Từ lúc</label>
+          <input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="w-full rounded-lg border border-border-base bg-bg-subtle px-2.5 py-1.5 text-sm text-tx-primary focus:border-brand-DEFAULT/60 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-[11px] text-tx-secondary">Đến lúc</label>
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="w-full rounded-lg border border-border-base bg-bg-subtle px-2.5 py-1.5 text-sm text-tx-primary focus:border-brand-DEFAULT/60 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() =>
+            mutation.mutate({
+              action: 'extend_window',
+              newStartTime: startTime,
+              newEndTime: endTime,
+            })
+          }
+          disabled={mutation.isPending}
+          className="flex-1 rounded-lg border border-brand-DEFAULT/30 bg-brand-DEFAULT/10 px-3 py-2 text-xs font-medium text-brand-DEFAULT transition-colors hover:bg-brand-DEFAULT/20 disabled:opacity-50"
+        >
+          🕐 Cập nhật khung giờ
+        </button>
+        <button
+          type="button"
+          onClick={onReject}
+          disabled={mutation.isPending}
+          className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function AccessRequestCard({ request }: Props) {
   const queryClient = useQueryClient();
   const [confirmAction, setConfirmAction] = useState<RespondAccessRequestDto | null>(null);
@@ -65,6 +198,7 @@ export function AccessRequestCard({ request }: Props) {
       else if (dto.action === 'approve_temp') toast.success(`Đã cho phép truy cập ${dto.durationMinutes ?? 30} phút`);
       else if (dto.action === 'approve_internet') toast.success('Đã bật lại Internet');
       else if (dto.action === 'extend_time') toast.success(`Đã gia hạn thêm ${dto.durationMinutes ?? 30} phút`);
+      else if (dto.action === 'extend_window') toast.success('Đã cập nhật khung giờ cho phép');
       else toast.success('Đã thêm vào danh sách cho phép');
     },
     onError: () => toast.error('Có lỗi xảy ra, thử lại sau'),
@@ -89,6 +223,7 @@ export function AccessRequestCard({ request }: Props) {
       return (
         <div className="mt-3 flex flex-wrap gap-2">
           <button
+            type="button"
             onClick={() => setConfirmAction({ action: 'approve_internet' })}
             disabled={mutation.isPending}
             className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-600 transition-colors hover:bg-green-500/20 disabled:opacity-50 dark:text-green-400"
@@ -96,6 +231,7 @@ export function AccessRequestCard({ request }: Props) {
             ▶ Bật lại Internet
           </button>
           <button
+            type="button"
             onClick={() => setConfirmAction({ action: 'reject' })}
             disabled={mutation.isPending}
             className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
@@ -109,58 +245,37 @@ export function AccessRequestCard({ request }: Props) {
     if (request.reason === 'time_limit_exceeded') {
       return (
         <div className="mt-3 space-y-3">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() =>
-                setConfirmAction({
-                  action: 'extend_time',
-                  durationMinutes: useDuration ? configDuration ?? 30 : request.requestedDurationMinutes ?? 30,
-                })
-              }
-              disabled={mutation.isPending}
-              className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-400"
-            >
-              ⏱ Gia hạn
-            </button>
-            <button
-              onClick={() => setConfirmAction({ action: 'reject' })}
-              disabled={mutation.isPending}
-              className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
-            >
-              ✕ Từ chối
-            </button>
-          </div>
-
           <div className="rounded-xl border border-border-base bg-bg-elevated/70 p-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-tx-primary">Gia hạn nhanh</p>
-                <p className="text-[11px] text-tx-secondary">Chọn số phút muốn cộng thêm</p>
-              </div>
-              <label className="relative inline-flex cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  checked={useDuration}
-                  onChange={(e) => setUseDuration(e.target.checked)}
-                  className="peer sr-only"
-                />
-                <div className="after:content-[''] relative h-5 w-9 rounded-full bg-bg-muted after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all peer-checked:bg-brand-DEFAULT peer-checked:after:translate-x-full" />
-              </label>
-            </div>
-            {useDuration && (
-              <div className="mt-2 flex items-center gap-2">
-                <input
-                  type="number"
-                  value={configDuration ?? 30}
-                  onChange={(e) => setConfigDuration(Number(e.target.value))}
-                  min={5}
-                  max={720}
-                  className="w-20 rounded-md border border-border-base bg-bg-surface px-2 py-1 text-center text-sm text-tx-primary focus:border-brand-DEFAULT focus:outline-none"
-                />
-                <span className="text-xs text-tx-secondary">phút</span>
-              </div>
+            {request.websiteRestrictionType === 'time_window' ? (
+              <p className="text-xs text-tx-secondary">
+                🕐 Khung giờ hiện tại:{' '}
+                <span className="font-medium text-tx-primary">
+                  {request.websiteAllowedStartTime ?? '?'} – {request.websiteAllowedEndTime ?? '?'}
+                </span>
+              </p>
+            ) : (
+              <p className="text-xs text-tx-secondary">
+                ⏱ Giới hạn hiện tại:{' '}
+                <span className="font-medium text-tx-primary">
+                  {request.websiteTimeLimitMinutes ?? '?'} phút/ngày
+                </span>
+              </p>
             )}
           </div>
+
+          {request.websiteRestrictionType === 'time_window' ? (
+            <WindowExtendForm
+              request={request}
+              mutation={mutation}
+              onReject={() => setConfirmAction({ action: 'reject' })}
+            />
+          ) : (
+            <MinutesExtendForm
+              request={request}
+              mutation={mutation}
+              onReject={() => setConfirmAction({ action: 'reject' })}
+            />
+          )}
         </div>
       );
     }
@@ -169,6 +284,7 @@ export function AccessRequestCard({ request }: Props) {
       <div className="mt-3 space-y-3">
         <div className="flex flex-wrap gap-2">
           <button
+            type="button"
             onClick={() => setConfirmAction({ action: 'approve_temp', durationMinutes: 30 })}
             disabled={mutation.isPending}
             className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-400"
@@ -176,6 +292,7 @@ export function AccessRequestCard({ request }: Props) {
             ⏱ 30 phút
           </button>
           <button
+            type="button"
             onClick={() => setConfirmAction({ action: 'reject' })}
             disabled={mutation.isPending}
             className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
@@ -198,7 +315,7 @@ export function AccessRequestCard({ request }: Props) {
                   onChange={(e) => setUseDuration(e.target.checked)}
                   className="peer sr-only"
                 />
-                <div className="after:content-[''] relative h-5 w-9 rounded-full bg-bg-muted after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all peer-checked:bg-brand-DEFAULT peer-checked:after:translate-x-full" />
+                <div className="after:content-[''] relative h-5 w-9 rounded-full bg-bg-muted after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-bg-surface after:ring-1 after:ring-border-base after:transition-all peer-checked:bg-brand-DEFAULT peer-checked:after:translate-x-full" />
               </label>
               <span className="text-[11px] font-medium text-tx-secondary">Theo phút</span>
             </div>
@@ -230,7 +347,7 @@ export function AccessRequestCard({ request }: Props) {
                 onChange={(e) => setUseTimeWindow(e.target.checked)}
                 className="peer sr-only"
               />
-              <div className="after:content-[''] relative h-5 w-9 rounded-full bg-bg-muted after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all peer-checked:bg-brand-DEFAULT peer-checked:after:translate-x-full" />
+              <div className="after:content-[''] relative h-5 w-9 rounded-full bg-bg-muted after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-bg-surface after:ring-1 after:ring-border-base after:transition-all peer-checked:bg-brand-DEFAULT peer-checked:after:translate-x-full" />
             </label>
           </div>
 
@@ -258,6 +375,7 @@ export function AccessRequestCard({ request }: Props) {
           )}
 
           <button
+            type="button"
             onClick={() =>
               setConfirmAction({
                 action: 'approve_permanent',
@@ -278,7 +396,7 @@ export function AccessRequestCard({ request }: Props) {
 
   return (
     <>
-      <div className={`rounded-xl border p-4 transition-all ${isPending ? 'bg-bg-surface border-border-base' : 'bg-bg-subtle border-border-base/50 opacity-75'}`}>
+      <div className={`rounded-xl border p-4 transition-all ${isPending ? 'border-border-base bg-bg-surface' : 'border-border-base/50 bg-bg-subtle opacity-75'}`}>
         <div className="flex items-start gap-3">
           <img
             src={request.childAvatarUrl || '/default-avatar.png'}
@@ -292,10 +410,7 @@ export function AccessRequestCard({ request }: Props) {
             </div>
             <p className="mt-0.5 text-xs text-tx-secondary">{contextText()}</p>
           </div>
-          <span
-            className="flex-shrink-0 text-xs text-tx-secondary"
-            title={formatDateTimeVN(request.requestedAt)}
-          >
+          <span className="flex-shrink-0 text-xs text-tx-secondary" title={formatDateTimeVN(request.requestedAt)}>
             {formatRelativeTime(request.requestedAt)}
           </span>
         </div>
@@ -342,9 +457,11 @@ export function AccessRequestCard({ request }: Props) {
                 ? 'Bật lại Internet'
                 : confirmAction.action === 'extend_time'
                   ? 'Gia hạn thời gian'
-                  : confirmAction.action === 'approve_temp'
-                    ? 'Cho phép tạm thời'
-                    : 'Thêm vào danh sách'
+                  : confirmAction.action === 'extend_window'
+                    ? 'Cập nhật khung giờ'
+                    : confirmAction.action === 'approve_temp'
+                      ? 'Cho phép tạm thời'
+                      : 'Thêm vào danh sách'
           }
           message={
             confirmAction.action === 'reject'
@@ -353,9 +470,11 @@ export function AccessRequestCard({ request }: Props) {
                 ? `Bật lại Internet cho ${request.childName}? Bộ lọc web sẽ hoạt động trở lại.`
                 : confirmAction.action === 'extend_time'
                   ? `Gia hạn thêm ${confirmAction.durationMinutes ?? 30} phút cho ${request.childName} dùng ${request.domain}?`
-                  : confirmAction.action === 'approve_temp'
-                    ? `Cho phép ${request.childName} truy cập ${request.domain} trong ${confirmAction.durationMinutes ?? 30} phút?`
-                    : `Thêm ${request.domain} vào danh sách cho phép cho ${request.childName}?`
+                  : confirmAction.action === 'extend_window'
+                    ? `Cập nhật khung giờ cho ${request.childName} với ${request.domain}?`
+                    : confirmAction.action === 'approve_temp'
+                      ? `Cho phép ${request.childName} truy cập ${request.domain} trong ${confirmAction.durationMinutes ?? 30} phút?`
+                      : `Thêm ${request.domain} vào danh sách cho phép cho ${request.childName}?`
           }
           variant={confirmAction.action === 'reject' ? 'danger' : 'default'}
           confirmLabel="Xác nhận"
