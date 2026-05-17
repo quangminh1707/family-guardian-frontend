@@ -59,6 +59,15 @@ export default function ChildDetailPage() {
     queryFn: () => websitesApi.getWebsites(id).then(res => res.data),
     refetchInterval: 30_000, // Cập nhật mỗi phút để thấy usage mới
   });
+  const websitesWithBonus = websites?.map((website) => {
+    const bonusSeconds = website.bonusSeconds ?? website.todayBonusSeconds ?? 0;
+    return {
+      ...website,
+      bonusSeconds,
+      effectiveSeconds:
+        website.effectiveSeconds ?? Math.max(0, website.todaySeconds - bonusSeconds),
+    };
+  });
 
   const { data: logsData, isLoading: isLogsLoading } = useQuery({
     queryKey: ['logs', id, logPage],
@@ -193,9 +202,9 @@ export default function ChildDetailPage() {
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                {[1, 2, 3].map(i => <Skeleton key={i} className="h-56 w-full rounded-[2rem]" />)}
              </div>
-           ) : websites && websites.length > 0 ? (
+           ) : websitesWithBonus && websitesWithBonus.length > 0 ? (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {websites.map((web) => (
+               {websitesWithBonus.map((web) => (
                  <WebsiteCard
                    key={web.id}
                    childId={id}
@@ -261,7 +270,7 @@ export default function ChildDetailPage() {
           childId={id}
           childName={child.fullName}
           defaultTab="warning"
-          websites={websites ?? []}
+          websites={websitesWithBonus ?? []}
           onClose={() => setShowWarningConfig(false)}
         />
       )}

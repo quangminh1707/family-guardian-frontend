@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllowedWebsite } from '../../types/website.types';
-import { formatDuration, formatUsagePercent } from '../../lib/formatters';
+import { formatDuration } from '../../lib/formatters';
 import {
   Globe,
   Clock,
@@ -68,7 +68,20 @@ export default function WebsiteCard({
   onEditCancel,
 }: WebsiteCardProps) {
   const queryClient = useQueryClient();
-  const usagePercent = formatUsagePercent(website.todaySeconds, website.timeLimitMinutes);
+  const bonusSeconds = website.bonusSeconds ?? website.todayBonusSeconds ?? 0;
+  const effectiveSeconds =
+    website.effectiveSeconds ?? Math.max(0, website.todaySeconds - bonusSeconds);
+  const limitSeconds = (website.timeLimitMinutes ?? 0) * 60;
+  const usagePercent = limitSeconds > 0
+    ? Math.min(100, Math.round((effectiveSeconds / limitSeconds) * 100))
+    : null;
+  const remainingMinutes = Math.max(0, Math.floor((limitSeconds - effectiveSeconds) / 60));
+  const progressColor =
+    usagePercent != null && usagePercent >= 100
+      ? 'bg-red-500'
+      : usagePercent != null && usagePercent >= 80
+        ? 'bg-amber-500'
+        : 'bg-brand';
   const timeWindowProgress =
     website.allowedStartTime && website.allowedEndTime
       ? calcTimeWindowProgress(website.allowedStartTime, website.allowedEndTime, website.todaySeconds)
@@ -211,11 +224,11 @@ export default function WebsiteCard({
                     Sử dụng
                   </span>
                   <span className={cn('font-mono', website.limitExceeded ? 'text-error' : 'text-tx-secondary')}>
-                    {formatDuration(website.todaySeconds)}
+                    {formatDuration(effectiveSeconds)}
                     {website.timeLimitMinutes && (
                       <span className="font-normal text-tx-muted/30">
                         {' '}
-                        / {formatDuration(website.timeLimitMinutes * 60)}
+                        / {formatDuration(limitSeconds)}
                       </span>
                     )}
                   </span>
@@ -226,18 +239,28 @@ export default function WebsiteCard({
                       value={usagePercent || 0}
                       className="h-2 rounded-full bg-bg-muted"
                       indicatorClassName={cn(
-                        'transition-all duration-500 shadow-[0_0_12px_rgba(124,58,237,0.8)]',
-                        website.limitExceeded ? 'bg-error shadow-error/50' : 'bg-brand'
+                        'transition-all duration-500',
+                        website.limitExceeded ? 'bg-error' : progressColor
                       )}
                     />
-                    <div className="flex justify-end">
+                    <div className="flex items-center justify-between gap-2">
+                      {bonusSeconds > 0 ? (
+                        <span className="rounded-full bg-success/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter text-success dark:text-green-400">
+                          +{Math.floor(bonusSeconds / 60)}p gia hạn
+                        </span>
+                      ) : (
+                        <span />
+                      )}
                       <span
                         className={cn(
                           'rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter',
                           website.limitExceeded ? 'bg-error/10 text-error' : 'bg-brand-subtle text-brand'
                         )}
                       >
-                        {usagePercent}% đã dùng
+                        {usagePercent ?? 0}% đã dùng
+                      </span>
+                      <span className="text-[9px] font-semibold uppercase tracking-tighter text-tx-muted">
+                        Còn {remainingMinutes}p sử dụng được
                       </span>
                     </div>
                   </div>
