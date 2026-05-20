@@ -28,6 +28,8 @@ CREATE TABLE users (
     avatar_url    VARCHAR(1000),                    -- URL ảnh đại diện từ Google
     role          ENUM('admin','guardian','child') NOT NULL DEFAULT 'guardian',
     is_active     BOOLEAN NOT NULL DEFAULT TRUE,
+    filter_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    internet_paused TINYINT(1) NOT NULL DEFAULT 0,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_google_id (google_id),
@@ -95,6 +97,7 @@ CREATE TABLE allowed_websites (
     added_by            INT NOT NULL,                   -- guardian_id
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    temp_expires_at     DATETIME NULL DEFAULT NULL,
     FOREIGN KEY (child_id)  REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (added_by)  REFERENCES users(id),
     UNIQUE KEY uq_child_domain (child_id, domain),
@@ -278,6 +281,7 @@ CREATE PROCEDURE sp_GetChildAllowedWebsites(IN p_child_id INT)
 BEGIN
     SELECT
         aw.id,
+        aw.child_id,
         aw.domain,
         aw.display_name,
         aw.favicon_url,
@@ -289,19 +293,26 @@ BEGIN
         aw.is_safe,
         aw.http_status_code,
         aw.last_checked_at,
+        aw.added_by,
         aw.created_at,
-        -- Usage hôm nay
+        aw.updated_at,
+        aw.temp_expires_at,
         COALESCE(dus.total_seconds, 0)          AS today_seconds,
+        COALESCE(dus.bonus_seconds, 0)          AS bonus_seconds,
+        GREATEST(0, COALESCE(dus.total_seconds, 0) - COALESCE(dus.bonus_seconds, 0))
+                                               AS effective_seconds,
         COALESCE(dus.request_count, 0)          AS today_requests,
-        -- Có vượt giới hạn không
         CASE
-            WHEN aw.time_limit_minutes IS NULL THEN FALSE
-            WHEN COALESCE(dus.total_seconds, 0) >= (aw.time_limit_minutes * 60) THEN TRUE
+            WHEN aw.time_limit_minutes IS NOT NULL
+                 AND GREATEST(0, COALESCE(dus.total_seconds, 0) - COALESCE(dus.bonus_seconds, 0))
+                     >= (aw.time_limit_minutes * 60)
+            THEN TRUE
             ELSE FALSE
         END AS limit_exceeded
     FROM allowed_websites aw
     LEFT JOIN daily_usage_stats dus
            ON dus.allowed_website_id = aw.id
+          AND dus.child_id = p_child_id
           AND dus.usage_date = CURDATE()
     WHERE aw.child_id = p_child_id
     ORDER BY aw.is_active DESC, aw.domain;

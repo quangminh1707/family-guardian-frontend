@@ -117,3 +117,20 @@ export function formatUsagePercent(seconds: number, limitMinutes?: number): numb
   if (!limitMinutes) return null;
   return Math.min(100, Math.round((seconds / (limitMinutes * 60)) * 100));
 }
+
+// Tính giờ kết thúc mới khi có bonus phút cho khung giờ
+export function formatExtendedEndTime(endTimeStr: string, bonusSeconds: number): string {
+  const [hoursStr = '0', minutesStr = '0'] = endTimeStr.split(':');
+  const hours = Number(hoursStr);
+  const minutes = Number(minutesStr);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return endTimeStr.substring(0, 5);
+  }
+
+  const totalMinutes = hours * 60 + minutes + Math.floor(bonusSeconds / 60);
+  const newHours = Math.floor(totalMinutes / 60) % 24;
+  const newMinutes = totalMinutes % 60;
+
+  return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+}

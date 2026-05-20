@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Save, Clock, Trash2, AlertTriangle, ShieldCheck, Bell } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { TimeInput24h } from './ui/TimeInput24h';
 import { websitesApi } from '../api/websites.api';
 import {
   timeWindowWarningConfigApi,
@@ -250,22 +251,10 @@ export default function TimeWindowModal({ childId, childName, websites, onClose 
               <div className="bg-bg-subtle p-5 rounded-3xl border border-border-subtle space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-tx-secondary uppercase">Giờ bắt đầu</label>
-                    <input
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                    />
+                    <TimeInput24h label="Giờ bắt đầu" value={startTime} onChange={setStartTime} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-tx-secondary uppercase">Giờ kết thúc</label>
-                    <input
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                    />
+                    <TimeInput24h label="Giờ kết thúc" value={endTime} onChange={setEndTime} />
                   </div>
                 </div>
 

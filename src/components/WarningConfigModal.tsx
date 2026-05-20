@@ -15,6 +15,7 @@ import { ConfirmModal, toast } from './feedback';
 import { formatTimeRange } from '../lib/formatters';
 import type { UpsertWarningConfigPayload } from '../api/warningConfig.api';
 import type { AllowedWebsite } from '../types/website.types';
+import { TimeInput24h } from './ui/TimeInput24h';
 
 interface Props {
   childId: number;
@@ -336,13 +337,7 @@ function RefactoredTimeWindowTab({ childId, websites }: Props) {
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-tx-secondary uppercase">Cảnh báo lúc</label>
-                    <input
-                      type="time"
-                      value={warnAtTime1}
-                      onChange={(e) => setWarnAtTime1(e.target.value)}
-                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                    />
+                    <TimeInput24h label="Cảnh báo lúc" value={warnAtTime1} onChange={setWarnAtTime1} />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-tx-secondary uppercase">Nội dung thông báo</label>
@@ -444,13 +439,7 @@ function RefactoredTimeWindowTab({ childId, websites }: Props) {
                   ) : (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-tx-secondary uppercase">Cảnh báo lúc</label>
-                        <input
-                          type="time"
-                          value={warnAtTime2}
-                          onChange={(e) => setWarnAtTime2(e.target.value)}
-                          className="input-custom w-full bg-bg-surface rounded-xl border border-error/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error transition-all text-tx-primary"
-                        />
+                        <TimeInput24h label="Cảnh báo lúc" value={warnAtTime2} onChange={setWarnAtTime2} />
                       </div>
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-tx-secondary uppercase">Nội dung thông báo mốc 2</label>
@@ -1254,22 +1243,10 @@ export function TimeWindowTab({ childId, websites }: Props) {
               <div className="bg-bg-subtle p-5 rounded-3xl border border-border-subtle space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-tx-secondary uppercase">Giờ bắt đầu</label>
-                    <input
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                    />
+                    <TimeInput24h label="Giờ bắt đầu" value={startTime} onChange={setStartTime} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-tx-secondary uppercase">Giờ kết thúc</label>
-                    <input
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                    />
+                    <TimeInput24h label="Giờ kết thúc" value={endTime} onChange={setEndTime} />
                   </div>
                 </div>
 

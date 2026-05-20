@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { TimeInput24h } from '../ui/TimeInput24h';
 import { Globe, Lock, Clock, Pencil, Save, X, Timer, ArrowRightLeft } from 'lucide-react';
 import type { AllowedWebsite } from '../../types/website.types';
 import { websitesApi } from '../../api/websites.api';
@@ -216,24 +217,14 @@ export default function EditWebsiteModal({ childId, open, website, onClose }: Ed
                     <Clock className="h-3.5 w-3.5" /> Khung giờ cho phép
                   </label>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-tx-secondary">Giờ bắt đầu</label>
-                      <input
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-tx-secondary">Giờ kết thúc</label>
-                      <input
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-tx-primary"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-tx-secondary">Giờ bắt đầu</label>
+                    <TimeInput24h value={startTime} onChange={setStartTime} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-tx-secondary">Giờ kết thúc</label>
+                    <TimeInput24h value={endTime} onChange={setEndTime} />
+                  </div>
                   </div>
                   {durationMinutes > 0 && (
                     <div className="flex items-center gap-2 rounded-xl bg-brand-subtle border border-brand/10 px-4 py-3 text-sm font-medium text-brand">
@@ -308,18 +299,8 @@ export default function EditWebsiteModal({ childId, open, website, onClose }: Ed
                         Khung giờ mới
                       </label>
                       <div className="grid grid-cols-2 gap-4">
-                        <input
-                          type="time"
-                          value={startTime}
-                          onChange={(e) => setStartTime(e.target.value)}
-                          className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 text-tx-primary"
-                        />
-                        <input
-                          type="time"
-                          value={endTime}
-                          onChange={(e) => setEndTime(e.target.value)}
-                          className="input-custom w-full bg-bg-surface rounded-xl border border-border-base p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 text-tx-primary"
-                        />
+                        <TimeInput24h value={startTime} onChange={setStartTime} />
+                        <TimeInput24h value={endTime} onChange={setEndTime} />
                       </div>
                     </>
                   )}

@@ -57,6 +57,16 @@ DELIMITER ;
 CALL add_column_if_not_exists('daily_usage_stats', 'session_count',
     'INT NOT NULL DEFAULT 0 COMMENT "Số phiên truy cập trong ngày"');
 
+-- Thêm filter_enabled và internet_paused vào users
+CALL add_column_if_not_exists('users', 'filter_enabled',
+    'TINYINT(1) NOT NULL DEFAULT 0 COMMENT "Bật/tắt lọc web"');
+CALL add_column_if_not_exists('users', 'internet_paused',
+    'TINYINT(1) NOT NULL DEFAULT 0 COMMENT "Tạm dừng Internet"');
+
+-- Thêm temp_expires_at vào allowed_websites
+CALL add_column_if_not_exists('allowed_websites', 'temp_expires_at',
+    'DATETIME NULL DEFAULT NULL COMMENT "Thời điểm hết hạn tạm thời"');
+
 -- ============================================================
 -- Stored Procedure: Lấy thống kê thời gian sử dụng theo child
 -- Dùng cho API GET /api/children/{childId}/logs/daily-usage

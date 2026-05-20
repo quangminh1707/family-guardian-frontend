@@ -12,6 +12,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
+import { TimeInput24h } from '../ui/TimeInput24h';
 import { Globe, Plus, CheckCircle, AlertTriangle, Loader2, Sparkles, Clock, Lock } from 'lucide-react';
 import { websitesApi } from '../../api/websites.api';
 import { websiteCheckApi } from '../../api/websiteCheck.api';
@@ -272,22 +273,10 @@ export default function AddWebsiteModal({ childId }: AddWebsiteModalProps) {
               <div className={cn('mt-5 transition-all', limitType !== 'timeWindow' && 'pointer-events-none')}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-bold text-tx-muted uppercase tracking-widest">Từ lúc</Label>
-                    <Input
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="rounded-2xl h-12 bg-bg-surface font-bold border-border-base text-tx-primary"
-                    />
+                    <TimeInput24h label="Từ lúc" value={startTime} onChange={setStartTime} />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-bold text-tx-muted uppercase tracking-widest">Đến lúc</Label>
-                    <Input
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="input-custom rounded-2xl h-12 bg-bg-surface font-bold border-border-base text-tx-primary"
-                    />
+                    <TimeInput24h label="Đến lúc" value={endTime} onChange={setEndTime} />
                   </div>
                 </div>
               </div>

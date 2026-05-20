@@ -71,11 +71,20 @@ export default function WebsiteCard({
   const bonusSeconds = website.bonusSeconds ?? website.todayBonusSeconds ?? 0;
   const effectiveSeconds =
     website.effectiveSeconds ?? Math.max(0, website.todaySeconds - bonusSeconds);
-  const limitSeconds = (website.timeLimitMinutes ?? 0) * 60;
+  const timeLimitMinutes = website.timeLimitMinutes ?? null;
+  const windowStartTime = website.allowedStartTime ?? '';
+  const windowEndTime = website.allowedEndTime ?? '';
+  const isTimeLimitMode = timeLimitMinutes != null && timeLimitMinutes > 0;
+  const isTimeWindowMode = Boolean(windowStartTime && windowEndTime);
+  const hasTimeLimitBonus = isTimeLimitMode && bonusSeconds > 0;
+  const hasTimeWindowBonus = isTimeWindowMode && bonusSeconds > 0;
+  const limitSeconds = (timeLimitMinutes ?? 0) * 60;
+  const totalGrantedSeconds = limitSeconds + bonusSeconds;
   const usagePercent = limitSeconds > 0
     ? Math.min(100, Math.round((effectiveSeconds / limitSeconds) * 100))
     : null;
-  const remainingMinutes = Math.max(0, Math.floor((limitSeconds - effectiveSeconds) / 60));
+  const remainingSeconds = Math.max(0, totalGrantedSeconds - website.todaySeconds);
+  const remainingMinutes = Math.floor(remainingSeconds / 60);
   const progressColor =
     usagePercent != null && usagePercent >= 100
       ? 'bg-red-500'
@@ -83,8 +92,8 @@ export default function WebsiteCard({
         ? 'bg-amber-500'
         : 'bg-brand';
   const timeWindowProgress =
-    website.allowedStartTime && website.allowedEndTime
-      ? calcTimeWindowProgress(website.allowedStartTime, website.allowedEndTime, website.todaySeconds)
+    isTimeWindowMode
+      ? calcTimeWindowProgress(windowStartTime, windowEndTime, website.todaySeconds)
       : null;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -157,7 +166,7 @@ export default function WebsiteCard({
         <div className="space-y-4">
           <div className="space-y-3">
             {/* Time Window mode */}
-            {website.allowedStartTime && website.allowedEndTime ? (
+            {isTimeWindowMode ? (
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                   <span className="flex items-center gap-1.5 text-tx-muted">
@@ -165,7 +174,7 @@ export default function WebsiteCard({
                     Khung giờ
                   </span>
                   <span className="font-mono text-tx-secondary">
-                    {website.allowedStartTime.substring(0, 5)} → {website.allowedEndTime.substring(0, 5)}
+                    {windowStartTime.substring(0, 5)} → {windowEndTime.substring(0, 5)}
                   </span>
                 </div>
                 {timeWindowProgress?.isWithinWindow ? (
@@ -225,7 +234,7 @@ export default function WebsiteCard({
                   </span>
                   <span className={cn('font-mono', website.limitExceeded ? 'text-error' : 'text-tx-secondary')}>
                     {formatDuration(effectiveSeconds)}
-                    {website.timeLimitMinutes && (
+                    {isTimeLimitMode && (
                       <span className="font-normal text-tx-muted/30">
                         {' '}
                         / {formatDuration(limitSeconds)}
@@ -233,7 +242,7 @@ export default function WebsiteCard({
                     )}
                   </span>
                 </div>
-                {website.timeLimitMinutes && (
+                {isTimeLimitMode && (
                   <div className="space-y-2">
                     <Progress
                       value={usagePercent || 0}
@@ -243,28 +252,59 @@ export default function WebsiteCard({
                         website.limitExceeded ? 'bg-error' : progressColor
                       )}
                     />
-                    <div className="flex items-center justify-between gap-2">
-                      {bonusSeconds > 0 ? (
-                        <span className="rounded-full bg-success/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter text-success dark:text-green-400">
-                          +{Math.floor(bonusSeconds / 60)}p gia hạn
-                        </span>
-                      ) : (
-                        <span />
-                      )}
-                      <span
-                        className={cn(
-                          'rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter',
-                          website.limitExceeded ? 'bg-error/10 text-error' : 'bg-brand-subtle text-brand'
+                    <div className="flex justify-between text-xs text-tx-secondary">
+                      <span>
+                        {Math.floor(effectiveSeconds / 60)} / {timeLimitMinutes} phút
+                        {hasTimeLimitBonus && (
+                          <span className="ml-1 text-green-600 dark:text-green-400">
+                            (+{Math.floor((bonusSeconds ?? 0) / 60)} gia hạn)
+                          </span>
                         )}
-                      >
-                        {usagePercent ?? 0}% đã dùng
                       </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-tighter text-tx-muted">
-                        Còn {remainingMinutes}p sử dụng được
-                      </span>
+                      <span>{Math.round(usagePercent ?? 0)}%</span>
                     </div>
+                    {hasTimeLimitBonus && (
+                      <div className="mt-2 flex items-center gap-2 rounded-lg border border-green-500/20 bg-green-500/8 px-3 py-2">
+                        <span className="text-xs text-green-600 dark:text-green-400">⏰ Gia hạn</span>
+                        <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                          +{Math.floor((bonusSeconds ?? 0) / 60)} phút
+                        </span>
+                        <span className="ml-auto text-xs text-tx-secondary">
+                          Còn lại:{' '}
+                          <span className="font-semibold text-tx-primary">
+                            {remainingMinutes} phút
+                          </span>
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
+              </div>
+            )}
+            {hasTimeWindowBonus && windowStartTime && windowEndTime && (
+              <div className="mt-2 flex items-center gap-2 rounded-lg border border-green-500/20 bg-green-500/8 px-3 py-2">
+                <span className="text-xs text-green-600 dark:text-green-400">⏰ Gia hạn</span>
+                <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                  +{Math.floor((bonusSeconds ?? 0) / 60)} phút
+                </span>
+                <span className="ml-auto text-xs text-tx-secondary">
+                  Kết thúc mới:{' '}
+                  <span className="font-semibold text-tx-primary">
+                    {(() => {
+                      const [hoursStr = '0', minutesStr = '0'] = windowEndTime.split(':');
+                      const hours = Number(hoursStr);
+                      const minutes = Number(minutesStr);
+                      if (Number.isNaN(hours) || Number.isNaN(minutes) || bonusSeconds <= 0) {
+                        return windowEndTime.substring(0, 5);
+                      }
+
+                      const totalMinutes = hours * 60 + minutes + Math.floor(bonusSeconds / 60);
+                      const newHours = Math.floor(totalMinutes / 60) % 24;
+                      const newMinutes = totalMinutes % 60;
+                      return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+                    })()}
+                  </span>
+                </span>
               </div>
             )}
           </div>
