@@ -12,18 +12,16 @@ export function useSignalR() {
 
   useEffect(() => {
     if (!isAuthenticated || !accessToken) return;
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl(import.meta.env.VITE_SIGNALR_URL, {
-    accessTokenFactory: () => useAuthStore.getState().accessToken ?? '',
-    // ✅ Thêm transport để tránh negotiate fail
-    transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
-  })
-  .withAutomaticReconnect([0, 2000, 5000, 10000])
-  .build();
 
-    // Child status changed -> update lists
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(import.meta.env.VITE_SIGNALR_URL, {
+        accessTokenFactory: () => useAuthStore.getState().accessToken ?? '',
+        transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
+      })
+      .withAutomaticReconnect([0, 2000, 5000, 10000])
+      .build();
+
     connection.on('ChildStatusChanged', (data: { userId: number; isOnline: boolean; lastSeenAt: string }) => {
-      // Invalidate children list or update specific cache
       queryClient.invalidateQueries({ queryKey: ['children'] });
       queryClient.setQueryData(['child', data.userId], (old: any) => {
         if (!old) return old;
@@ -31,10 +29,31 @@ const connection = new signalR.HubConnectionBuilder()
       });
     });
 
-    // New website usage alert or restriction triggered
     connection.on('ReceiveNotification', (n: any) => {
       toast.info(n.title, { description: n.message });
       addNotification(n);
+    });
+
+    connection.on('ScreenshotReady', (data: {
+      screenshotId: number;
+      childId: number;
+      domain: string;
+      status?: string;
+      imageUrl?: string;
+      errorMessage?: string;
+    }) => {
+      queryClient.invalidateQueries({ queryKey: ['screenshots', data.childId, data.domain] });
+      queryClient.invalidateQueries({ queryKey: ['screenshots', data.childId, data.domain, 'modal'] });
+
+      if (data.status === 'tab_not_found') {
+        toast.warning(`Con chưa mở website ${data.domain}`);
+      } else if (data.status === 'failed') {
+        toast.error(`Chụp ảnh ${data.domain} thất bại`, {
+          description: data.errorMessage || 'Không thể chụp ảnh',
+        });
+      } else if (data.imageUrl || data.status === 'captured') {
+        toast.success(`Đã chụp ảnh ${data.domain}`);
+      }
     });
 
     connection.start().catch((err) => console.warn('SignalR Connection Error: ', err));

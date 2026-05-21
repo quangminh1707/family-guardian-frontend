@@ -11,6 +11,7 @@ import {
   RefreshCw,
   BarChart3,
   Pencil,
+  Camera,
 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Switch } from '../ui/switch';
@@ -20,6 +21,7 @@ import { cn } from '../../lib/utils';
 import { websitesApi } from '../../api/websites.api';
 import { ConfirmModal, toast } from '../feedback';
 import EditWebsiteModal from './EditWebsiteModal';
+import ScreenshotModal from './ScreenshotModal';
 
 function toMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);
@@ -98,6 +100,7 @@ export default function WebsiteCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [lastRequestedEdit, setLastRequestedEdit] = useState(false);
+  const [screenshotModalOpen, setScreenshotModalOpen] = useState(false);
 
   const toggleMutation = useMutation({
     mutationFn: () => websitesApi.toggleWebsite(childId, website.id),
@@ -351,6 +354,15 @@ export default function WebsiteCard({
           <Button
             variant="ghost"
             size="sm"
+            className={cn("h-9 w-9 rounded-xl text-tx-muted hover:bg-brand-subtle hover:text-brand", screenshotModalOpen && "bg-brand-subtle text-brand")}
+            title="Ảnh chụp"
+            onClick={() => setScreenshotModalOpen(!screenshotModalOpen)}
+          >
+            <Camera className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-9 w-9 rounded-xl text-tx-muted hover:bg-error/10 hover:text-error"
             title="Xóa"
             onClick={() => setShowDeleteConfirm(true)}
@@ -358,7 +370,18 @@ export default function WebsiteCard({
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
+
+
       </Card>
+
+      {screenshotModalOpen && (
+        <ScreenshotModal
+          childId={childId}
+          domain={website.domain}
+          websiteName={website.displayName || website.domain}
+          onClose={() => setScreenshotModalOpen(false)}
+        />
+      )}
 
       <EditWebsiteModal
         childId={childId}
@@ -382,3 +405,5 @@ export default function WebsiteCard({
     </>
   );
 }
+
+
