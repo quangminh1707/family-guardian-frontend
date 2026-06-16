@@ -80,7 +80,7 @@ npm install @tanstack/react-table
 ```env
 VITE_API_BASE_URL=http://localhost:5247/api
 VITE_SIGNALR_URL=http://localhost:5247/hubs/notifications
-VITE_GOOGLE_CLIENT_ID=546760398169-irn9q5hb22579cqp7icprlc1hgtd5hoc.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
 
 ---
