@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { logsApi } from '../../api/logs.api';
-import { formatDuration, formatDateTime } from '../../lib/formatters';
+import { formatDuration, formatDateTime, getFaviconUrl } from '../../lib/formatters';
 import { Calendar, Monitor, Clock, PlayCircle, CheckCircle2 } from 'lucide-react';
 
 interface Props { childId: number; }
@@ -83,8 +83,15 @@ export function SessionHistoryTab({ childId }: Props) {
                     <tr key={s.id} className="hover:bg-bg-subtle/50 transition-colors group">
                         <td className="px-8 py-4">
                         <div className="flex items-center gap-3">
-                            {s.faviconUrl ? (
-                            <img src={s.faviconUrl} alt="" className="w-8 h-8 rounded-xl shadow-sm bg-bg-surface" />
+                            {s.domain ? (
+                            <img
+                              src={getFaviconUrl(s.domain)}
+                              alt=""
+                              className="w-8 h-8 rounded-xl shadow-sm bg-bg-surface"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${s.domain}&sz=32`;
+                              }}
+                            />
                             ) : (
                                 <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center text-violet-400 text-xs font-bold uppercase">
                                     {s.domain.charAt(0)}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllowedWebsite } from '../../types/website.types';
-import { formatDuration } from '../../lib/formatters';
+import { formatDuration, getFaviconUrl } from '../../lib/formatters';
 import {
   Globe,
   Clock,
@@ -149,8 +149,15 @@ export default function WebsiteCard({
         <div className="mb-6 flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border-base bg-bg-subtle shadow-inner transition-colors group-hover:bg-brand-subtle">
-              {website.faviconUrl ? (
-                <img src={website.faviconUrl} alt={website.domain} className="h-8 w-8 rounded-lg" />
+              {website.domain ? (
+                <img
+                  src={getFaviconUrl(website.domain)}
+                  alt={website.domain}
+                  className="h-8 w-8 rounded-lg"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${website.domain}&sz=32`;
+                  }}
+                />
               ) : (
                 <Globe className="h-8 w-8 text-tx-muted group-hover:text-brand" />
               )}

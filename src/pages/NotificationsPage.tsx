@@ -112,7 +112,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-0">
+    <div className="mx-auto max-w-4xl px-4 py-6 space-y-0">
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-tx-primary">Thông Báo</h1>
         <p className="mt-1 text-sm text-tx-secondary">Theo dõi yêu cầu và thông báo từ hệ thống.</p>
@@ -121,7 +121,7 @@ export default function NotificationsPage() {
       <div className="mb-1 flex items-center justify-between gap-3">
         <div className="relative flex rounded-2xl border border-border-base bg-bg-subtle p-1">
           <div
-            className="absolute bottom-1 top-1 rounded-xl border border-border-base/80 bg-bg-surface shadow-sm transition-all duration-200 ease-out"
+            className="absolute bottom-1 top-1 rounded-2xl border border-border-base/80 bg-bg-surface shadow-sm transition-all duration-200 ease-out"
             style={{
               width: 'calc(50% - 4px)',
               left: activeTab === 'requests' ? '4px' : 'calc(50%)',
@@ -131,7 +131,7 @@ export default function NotificationsPage() {
           <button
             type="button"
             onClick={() => setActiveTab('requests')}
-            className={`relative z-10 flex min-w-[120px] items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition-colors duration-200 ${
+            className={`relative z-10 flex min-w-[120px] items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-colors duration-200 ${
               activeTab === 'requests' ? 'text-tx-primary' : 'text-tx-secondary hover:text-tx-primary'
             }`}
           >
@@ -289,9 +289,16 @@ export default function NotificationsPage() {
 
                           <div className="flex-1 space-y-1">
                             <div className="mb-1 flex items-start justify-between gap-3">
-                              <h3 className={cn('text-lg font-bold tracking-tight', n.isRead ? 'text-tx-secondary' : 'text-tx-primary')}>
-                                {n.title}
-                              </h3>
+                              <div className="flex flex-col gap-2">
+                                <h3 className={cn('text-lg font-bold tracking-tight', n.isRead ? 'text-tx-secondary' : 'text-tx-primary')}>
+                                  {n.title}
+                                </h3>
+                                {n.notificationType === 'tamper_alert' && (
+                                  <span className="inline-flex w-fit items-center gap-1 rounded-full border border-error/30 bg-error/15 px-2 py-0.5 text-[11px] font-semibold text-error">
+                                    ⚠ Cảnh báo bảo mật
+                                  </span>
+                                )}
+                              </div>
                               <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-tx-muted">
                                 <Clock className="h-3 w-3" />
                                 {formatRelativeTime(n.createdAt)}

@@ -134,3 +134,27 @@ export function formatExtendedEndTime(endTimeStr: string, bonusSeconds: number):
 
   return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
 }
+
+/**
+ * Format a Date as local ISO without timezone suffix.
+ * Use this when sending scheduled datetimes to the backend.
+ */
+export function toLocalISOString(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+    + `T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+}
+
+export function getFaviconUrl(domain: string): string {
+  if (!domain) return '';
+
+  const cleanDomain = domain
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/.*$/, '')
+    .trim();
+
+  if (!cleanDomain) return '';
+
+  return `https://www.google.com/s2/favicons?domain=${cleanDomain}&sz=64`;
+}

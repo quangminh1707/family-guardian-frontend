@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { childrenApi } from '../api/children.api';
 import ChildCard from '../components/children/ChildCard';
@@ -13,13 +14,31 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '../components/ui/skeleton';
 import { useAuthStore } from '../store/authStore';
+import UsageChart from '../components/UsageChart';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
+  const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
   const { data: children, isLoading } = useQuery({
     queryKey: ['children'],
     queryFn: () => childrenApi.getMyChildren().then(res => res.data),
   });
+
+  useEffect(() => {
+    if (!children || children.length === 0) {
+      setSelectedChildId(null);
+      return;
+    }
+
+    const currentId = selectedChildId ?? children[0].id;
+    const hasCurrent = children.some((child) => child.id === currentId);
+
+    if (!hasCurrent) {
+      setSelectedChildId(children[0].id);
+    } else if (selectedChildId == null) {
+      setSelectedChildId(currentId);
+    }
+  }, [children, selectedChildId]);
 
   const stats = [
     { 
@@ -80,6 +99,36 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {children && children.length > 0 && (
+        <section className="rounded-[2.5rem] border border-border-base bg-bg-surface p-6 shadow-sm">
+          <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-tx-muted">Thống kê</p>
+              <h3 className="text-2xl font-black tracking-tight text-tx-primary">Tổng quan sử dụng</h3>
+            </div>
+            <label className="flex items-center gap-3 text-sm font-semibold text-tx-secondary">
+              <span>Chọn con</span>
+              <select
+                value={selectedChildId ?? children[0].id}
+                onChange={(e) => setSelectedChildId(Number(e.target.value))}
+                className="rounded-2xl border border-border-base bg-bg-surface px-4 py-2 text-sm font-medium text-tx-primary outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/20"
+              >
+                {children.map((child) => (
+                  <option key={child.id} value={child.id}>
+                    {child.fullName}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <UsageChart
+            childId={selectedChildId ?? children[0].id}
+            childName={children.find((child) => child.id === (selectedChildId ?? children[0].id))?.fullName ?? ''}
+          />
+        </section>
+      )}
 
       {/* Children List Section */}
       <div className="space-y-6">

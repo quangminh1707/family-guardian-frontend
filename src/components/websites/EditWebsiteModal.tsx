@@ -8,6 +8,7 @@ import { Globe, Lock, Clock, Pencil, Save, X, Timer, ArrowRightLeft } from 'luci
 import type { AllowedWebsite } from '../../types/website.types';
 import { websitesApi } from '../../api/websites.api';
 import { ConfirmModal, toast } from '../feedback';
+import { getFaviconUrl } from '../../lib/formatters';
 
 interface EditWebsiteModalProps {
   childId: number;
@@ -157,8 +158,15 @@ export default function EditWebsiteModal({ childId, open, website, onClose }: Ed
             <div className="rounded-[2rem] border border-border-base bg-bg-subtle/30 p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-subtle border border-border-base shadow-sm">
-                  {website.faviconUrl ? (
-                    <img src={website.faviconUrl} alt={website.domain} className="h-7 w-7 rounded-lg" />
+                  {website.domain ? (
+                    <img
+                      src={getFaviconUrl(website.domain)}
+                      alt={website.domain}
+                      className="h-7 w-7 rounded-lg"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${website.domain}&sz=32`;
+                      }}
+                    />
                   ) : (
                     <Globe className="h-7 w-7 text-tx-muted" />
                   )}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { accessRequestsApi } from '../../api/accessRequests.api';
 import type { AccessRequestDto, RespondAccessRequestDto } from '../../api/accessRequests.api';
-import { formatDateTimeVN, formatRelativeTime } from '../../lib/formatters';
+import { formatDateTimeVN, formatRelativeTime, getFaviconUrl } from '../../lib/formatters';
 import { toast } from '../feedback';
 import ConfirmModal from '../feedback/ConfirmModal';
 
@@ -205,8 +205,6 @@ export function AccessRequestCard({ request }: Props) {
   });
 
   const isPending = request.status === 'pending';
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${request.domain}&sz=32`;
-
   const contextText = () => {
     if (request.reason === 'internet_paused') return 'muốn bạn bật lại Internet';
     if (request.reason === 'time_limit_exceeded') {
@@ -282,12 +280,12 @@ export function AccessRequestCard({ request }: Props) {
 
     return (
       <div className="mt-3 space-y-3">
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => setConfirmAction({ action: 'approve_temp', durationMinutes: 30 })}
             disabled={mutation.isPending}
-            className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-400"
+            className="inline-flex min-h-9 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-400"
           >
             ⏱ 30 phút
           </button>
@@ -295,19 +293,19 @@ export function AccessRequestCard({ request }: Props) {
             type="button"
             onClick={() => setConfirmAction({ action: 'reject' })}
             disabled={mutation.isPending}
-            className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
+            className="inline-flex min-h-9 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-50 dark:text-red-400"
           >
             ✕ Từ chối
           </button>
         </div>
 
         <div className="space-y-3 rounded-xl border border-border-base bg-bg-elevated/70 p-3">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+            <div className="min-w-0">
               <p className="text-xs font-medium text-tx-primary">Thêm vào danh sách cho phép</p>
               <p className="text-[11px] text-tx-secondary">Có thể cấu hình thời lượng hoặc khung giờ</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <label className="relative inline-flex cursor-pointer items-center">
                 <input
                   type="checkbox"
@@ -335,8 +333,8 @@ export function AccessRequestCard({ request }: Props) {
             </div>
           )}
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+            <div className="min-w-0">
               <p className="text-xs font-medium text-tx-primary">Khung giờ cho phép</p>
               <p className="text-[11px] text-tx-secondary">Giới hạn truy cập theo thời gian</p>
             </div>
@@ -385,7 +383,7 @@ export function AccessRequestCard({ request }: Props) {
               })
             }
             disabled={mutation.isPending}
-            className="w-full rounded-lg bg-brand-DEFAULT px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-DEFAULT/90 disabled:opacity-50"
+            className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-brand px-3 py-2 text-sm font-medium   --text-primary shadow-sm shadow-brand/10 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/20 active:translate-y-0 disabled:opacity-50 dark:shadow-brand/5 dark:hover:shadow-brand/10"
           >
             ✅ Thêm vào danh sách cho phép
           </button>
@@ -415,8 +413,15 @@ export function AccessRequestCard({ request }: Props) {
           </span>
         </div>
 
-        <div className="mt-3 flex items-center gap-2 rounded-lg border border-border-base/50 bg-bg-subtle p-2">
-          <img src={faviconUrl} alt="" className="h-4 w-4 flex-shrink-0" />
+        <div className="mt-3 flex min-h-10 items-center gap-2 rounded-lg border border-border-base/50 bg-bg-subtle p-2">
+          <img
+            src={getFaviconUrl(request.domain)}
+            alt=""
+            className="h-4 w-4 flex-shrink-0"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${request.domain}&sz=32`;
+            }}
+          />
           <span className="truncate text-sm font-medium text-tx-primary">{request.domain}</span>
           {request.fullUrl && request.fullUrl !== request.domain && (
             <span className="ml-auto truncate text-xs text-tx-secondary">{request.fullUrl.substring(0, 50)}...</span>

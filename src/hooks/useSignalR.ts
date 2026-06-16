@@ -30,7 +30,9 @@ export function useSignalR() {
     });
 
     connection.on('ReceiveNotification', (n: any) => {
-      toast.info(n.title, { description: n.message });
+      if (n.notificationType !== 'tamper_alert') {
+        toast.info(n.title, { description: n.message });
+      }
       addNotification(n);
     });
 
@@ -46,15 +48,16 @@ export function useSignalR() {
       queryClient.invalidateQueries({ queryKey: ['screenshots', data.childId, data.domain, 'modal'] });
 
       if (data.status === 'tab_not_found') {
-        toast.warning(`Con chưa mở website ${data.domain}`);
+        toast.warning(`Con chÃƒâ€ Ã‚Â°a mÃƒÂ¡Ã‚Â»Ã…Â¸ website ${data.domain}`);
       } else if (data.status === 'failed') {
-        toast.error(`Chụp ảnh ${data.domain} thất bại`, {
-          description: data.errorMessage || 'Không thể chụp ảnh',
+        toast.error(`ChÃƒÂ¡Ã‚Â»Ã‚Â¥p ÃƒÂ¡Ã‚ÂºÃ‚Â£nh ${data.domain} thÃƒÂ¡Ã‚ÂºÃ‚Â¥t bÃƒÂ¡Ã‚ÂºÃ‚Â¡i`, {
+          description: data.errorMessage || 'KhÃƒÆ’Ã‚Â´ng thÃƒÂ¡Ã‚Â»Ã†â€™ chÃƒÂ¡Ã‚Â»Ã‚Â¥p ÃƒÂ¡Ã‚ÂºÃ‚Â£nh',
         });
       } else if (data.imageUrl || data.status === 'captured') {
-        toast.success(`Đã chụp ảnh ${data.domain}`);
+        toast.success(`Ãƒâ€žÃ‚ÂÃƒÆ’Ã‚Â£ chÃƒÂ¡Ã‚Â»Ã‚Â¥p ÃƒÂ¡Ã‚ÂºÃ‚Â£nh ${data.domain}`);
       }
     });
+
 
     connection.start().catch((err) => console.warn('SignalR Connection Error: ', err));
 

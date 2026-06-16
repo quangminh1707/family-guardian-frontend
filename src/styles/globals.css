@@ -71,6 +71,15 @@
   }
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 .dark ::-webkit-scrollbar { width: 6px; }
 .dark ::-webkit-scrollbar-track { background: var(--bg-subtle); }
 .dark ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }

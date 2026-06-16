@@ -20,6 +20,7 @@ import type { WebsiteCheckResult } from '../../types/website.types';
 import { Badge } from '../ui/badge';
 import { cn } from '../../lib/utils';
 import { ConfirmModal, toast } from '../feedback';
+import { getFaviconUrl } from '../../lib/formatters';
 
 interface AddWebsiteModalProps {
   childId: number;
@@ -179,8 +180,15 @@ export default function AddWebsiteModal({ childId }: AddWebsiteModalProps) {
             >
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-bg-surface rounded-2xl flex items-center justify-center shadow-sm ring-1 ring-border-base">
-                  {checkResult.faviconUrl ? (
-                    <img src={checkResult.faviconUrl} className="w-8 h-8 rounded-lg" alt="" />
+                  {checkResult.domain ? (
+                    <img
+                      src={getFaviconUrl(checkResult.domain)}
+                      className="w-8 h-8 rounded-lg"
+                      alt=""
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${checkResult.domain}&sz=32`;
+                      }}
+                    />
                   ) : (
                     <Globe className="w-8 h-8 text-tx-muted" />
                   )}

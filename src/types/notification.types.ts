@@ -7,6 +7,7 @@ export interface Notification {
   title: string;
   message: string;
   type: NotificationType;
+  notificationType?: string | null;
   isRead: boolean;
   scheduledAt?: string;
   sentAt?: string;

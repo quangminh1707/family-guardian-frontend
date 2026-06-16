@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid } from 'recharts';
 import { logsApi } from '../../api/logs.api';
-import { formatDuration } from '../../lib/formatters';
+import { formatDuration, getFaviconUrl } from '../../lib/formatters';
 
 interface Props {
   childId: number;
@@ -52,7 +52,7 @@ export function UsageSummaryTab({ childId }: Props) {
                 <BarChart
                 data={data?.byDomain.map(d => ({
                     name: d.displayName || d.domain,
-                    faviconUrl: d.faviconUrl,
+                    faviconUrl: getFaviconUrl(d.domain),
                     totalSeconds: d.totalSeconds,
                     limitSeconds: d.timeLimitMinutes ? d.timeLimitMinutes * 60 * days : null,
                     overLimit: d.timeLimitMinutes
@@ -168,8 +168,15 @@ export function UsageSummaryTab({ childId }: Props) {
                 <tr key={d.domain} className="hover:bg-bg-subtle/50 transition-colors group">
                     <td className="px-8 py-4">
                     <div className="flex items-center gap-3">
-                        {d.faviconUrl ? (
-                        <img src={d.faviconUrl} alt="" className="w-8 h-8 rounded-xl shadow-sm bg-bg-surface" />
+                        {d.domain ? (
+                        <img
+                          src={getFaviconUrl(d.domain)}
+                          alt=""
+                          className="w-8 h-8 rounded-xl shadow-sm bg-bg-surface"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${d.domain}&sz=32`;
+                          }}
+                        />
                         ) : (
                             <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center text-violet-400 text-xs font-bold uppercase">
                                 {d.domain.charAt(0)}

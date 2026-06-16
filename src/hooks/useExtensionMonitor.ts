@@ -34,7 +34,6 @@ export function useExtensionMonitor() {
       })
       .catch((err) => console.warn('[SignalR] ExtensionMonitor connection error:', err));
 
-    // ─── Nhận sự kiện extension của con tắt ───────────────────
     connection.on('ExtensionOffline', (data: {
       childId: number;
       childName: string;
@@ -43,7 +42,6 @@ export function useExtensionMonitor() {
     }) => {
       console.warn(`[ExtensionMonitor] ${data.childName} turned off extension`);
 
-      // Hiện toast cảnh báo
       toast.warning(`⚠️ ${data.childName} vừa tắt extension bộ lọc!`, {
         duration: 10_000,
         action: {
@@ -52,7 +50,6 @@ export function useExtensionMonitor() {
         }
       });
 
-      // Thêm vào notification store (bell icon)
       addNotification({
         id: data.notificationId ?? Date.now(),
         title: '⚠️ Extension bị tắt',
@@ -62,15 +59,34 @@ export function useExtensionMonitor() {
         createdAt: data.detectedAt,
         childId: data.childId,
         guardianId: useAuthStore.getState().user?.id ?? 0,
+        notificationType: 'extension_offline',
       });
 
-      // ✅ Refresh trang thông báo + danh sách con
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['children'] });
       queryClient.invalidateQueries({ queryKey: ['child', data.childId] });
     });
 
-    // ─── Lắng nghe cảnh báo thời gian ──────────────────────────────
+    connection.on('TamperAlert', (data: {
+      childId: number;
+      childName: string;
+      detectedAt: string;
+    }) => {
+      console.error(`[ExtensionMonitor] Tamper alert for ${data.childName}`);
+
+      toast.error(`🚨 ${data.childName} vừa tắt tiện ích Family Guardian!`, {
+        duration: 10_000,
+        action: {
+          label: 'Xem chi tiết',
+          onClick: () => window.location.href = `/children/${data.childId}`
+        }
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['children'] });
+      queryClient.invalidateQueries({ queryKey: ['child', data.childId] });
+    });
+
     connection.on('TimeWarning', (data: {
       childId: number;
       childName: string;
@@ -89,7 +105,6 @@ export function useExtensionMonitor() {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     });
 
-    // ─── Lắng nghe yêu cầu truy cập từ con ─────────────────────
     connection.on('AccessRequest', (data: {
       childName: string;
       childAvatarUrl?: string;

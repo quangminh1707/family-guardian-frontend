@@ -33,3 +33,53 @@ export const childrenApi = {
   getScreenshots: (childId: number, domain: string, limit = 10) =>
     api.get<ScreenshotDto[]>(`/children/${childId}/screenshots?domain=${encodeURIComponent(domain)}&limit=${limit}`),
 };
+
+export const requestScreenshot = async (childId: number, domain: string) => {
+  const res = await api.post<{ screenshotId: number; message: string }>(
+    `/children/${childId}/request-screenshot?domain=${encodeURIComponent(domain)}`,
+  );
+  return res.data;
+};
+
+export const getScreenshots = async (childId: number, domain: string, limit = 10) => {
+  const res = await api.get<ScreenshotDto[]>(
+    `/children/${childId}/screenshots?domain=${encodeURIComponent(domain)}&limit=${limit}`,
+  );
+  return res.data;
+};
+
+export interface ScheduledScreenshotDto {
+  id: number;
+  domain: string;
+  scheduledAt: string;
+  status: string;
+  screenshotId: number | null;
+}
+
+export const deleteScreenshot = async (childId: number, screenshotId: number) => {
+  await api.delete(`/children/${childId}/screenshots/${screenshotId}`);
+};
+
+export const scheduleScreenshot = async (
+  childId: number,
+  domain: string,
+  scheduledAt: string,
+) => {
+  const res = await api.post<{ scheduleId: number; message: string }>(
+    `/children/${childId}/schedule-screenshot`,
+    { domain, scheduledAt },
+  );
+  return res.data;
+};
+
+export const getScheduledScreenshots = async (childId: number, domain: string) => {
+  const res = await api.get<ScheduledScreenshotDto[]>(
+    `/children/${childId}/scheduled-screenshots`,
+    { params: { domain } },
+  );
+  return res.data;
+};
+
+export const cancelScheduledScreenshot = async (childId: number, scheduleId: number) => {
+  await api.delete(`/children/${childId}/scheduled-screenshots/${scheduleId}`);
+};

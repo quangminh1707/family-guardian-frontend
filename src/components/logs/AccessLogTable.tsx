@@ -5,7 +5,7 @@ import {
   createColumnHelper
 } from '@tanstack/react-table';
 import type { AccessLog } from '../../types/log.types';
-import { formatDateTime, formatDuration } from '../../lib/formatters';
+import { formatDateTime, formatDuration, getFaviconUrl } from '../../lib/formatters';
 import { 
   Globe, 
   ShieldCheck, 
@@ -49,8 +49,15 @@ export default function AccessLogTable({ logs, total, page, onPageChange, pageSi
       cell: info => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-bg-subtle rounded-xl flex items-center justify-center border border-border-base shrink-0">
-             {info.row.original.faviconUrl ? (
-               <img src={info.row.original.faviconUrl} alt="" className="w-6 h-6 rounded" />
+             {info.row.original.domain ? (
+               <img
+                 src={getFaviconUrl(info.row.original.domain)}
+                 alt=""
+                 className="w-6 h-6 rounded"
+                 onError={(e) => {
+                   (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${info.row.original.domain}&sz=32`;
+                 }}
+               />
              ) : (
                <Globe className="w-5 h-5 text-tx-muted" />
              )}
